@@ -1,0 +1,43 @@
+/* Sheets and overlays */
+.sheet{position:absolute;inset:0;background:rgba(10,12,30,.45);display:flex;align-items:flex-end;z-index:5}
+.sheet[hidden]{display:none!important}
+.sheet .panel{width:100%;background:var(--surface);border-radius:26px 26px 0 0;padding:18px;display:flex;flex-direction:column;gap:12px;max-height:88%;overflow-y:auto;animation:rise .25s ease-out}
+@keyframes rise{from{transform:translateY(40px);opacity:0}}
+.panel h3{font-size:18px}
+.wave{display:flex;align-items:center;justify-content:center;gap:4px;height:40px}
+.wave i{width:5px;border-radius:3px;background:var(--accent);animation:wv .9s ease-in-out infinite}
+.wave i:nth-child(2n){animation-delay:.15s}.wave i:nth-child(3n){animation-delay:.3s}.wave i:nth-child(5n){animation-delay:.45s}
+@keyframes wv{0%,100%{height:8px}50%{height:36px}}
+.wave.off i{animation:none;height:6px;opacity:.4}
+.transcript{min-height:52px;font-size:16px;line-height:1.45;background:var(--bg);border-radius:14px;padding:12px}
+.transcript .caret{display:inline-block;width:2px;height:1em;background:var(--accent);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.typebox{display:flex;gap:8px}
+.typebox input{flex:1;min-width:0;font:inherit;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--screen);color:var(--ink)}
+.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:700;background:var(--bg);color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.block{width:100%;padding:13px}
+.parsed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.parsed li{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:12px}
+.parsed .t-body{font-size:14px}
+.hint{font-size:12px;color:var(--muted)}
+.chip.cycle{cursor:pointer}
+
+.overlay{position:absolute;inset:0;z-index:8;background:var(--ink);color:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px;text-align:center}
+.overlay[hidden]{display:none!important}
+.overlay h2{font-size:28px}
+.overlay p{color:var(--surface);opacity:.75;max-width:28ch}
+.evolve{display:flex;align-items:center;gap:14px}
+.evolve .arrow{font-family:var(--f-pixel);font-size:20px;opacity:.6}
+.evolve .to{animation:pop .7s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.2) rotate(-12deg);opacity:0}}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:8px;height:8px;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(760px) rotate(360deg)}}
+.unlock{font-family:var(--f-pixel);font-size:12px;background:var(--gold);color:#1A1D33;padding:4px 10px;border-radius:6px}
+
+.intro .dots{display:flex;gap:6px}.intro .dots i{width:8px;height:8px;border-radius:50%;background:var(--surface);opacity:.3}.intro .dots i.on{opacity:1}
+
+.toast{position:absolute;left:16px;right:16px;top:44px;z-index:9;background:var(--gold);color:#1A1D33;border-radius:14px;padding:10px 14px;font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center;animation:rise .25s ease-out}
+.toast[hidden]{display:none!important}
+

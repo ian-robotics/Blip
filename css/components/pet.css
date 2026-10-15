@@ -1,0 +1,27 @@
+/* Blip tab */
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.stage .big{height:130px;display:grid;place-items:center}
+.stage h3{font-size:22px}
+.bob{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+.stat b{display:block;font-family:var(--f-display);font-size:22px;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;color:var(--muted)}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.week div{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--muted)}
+.week i{width:100%;aspect-ratio:1;border-radius:8px;background:var(--line)}
+.week i.on{background:var(--blip)}
+.week i.today{outline:2px solid var(--accent);outline-offset:1px}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.badge{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 10px;font-size:13px}
+.badge .ico{width:28px;height:28px;flex:none;border-radius:8px;display:grid;place-items:center;background:var(--bg);color:var(--muted);font-family:var(--f-pixel);font-size:12px}
+.badge.got .ico{background:var(--gold);color:#1A1D33}
+.badge:not(.got){color:var(--muted)}
+.badge b{display:block;font-size:13px}
+.badge small{font-size:11px;color:var(--muted)}
+
+.controls{width:100%;max-width:370px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.controls .btn{background:var(--surface);border:1px solid var(--line);font-size:13px}
+.controls p{width:100%;text-align:center;font-size:12px;color:var(--muted)}
+

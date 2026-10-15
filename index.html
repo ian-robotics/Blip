@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blip Task Pet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Silkscreen&display=swap">
+<link rel="stylesheet" href="./css/style.css">
+<script type="module" src="./js/app.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">IN4MATX 151 · Playtest build</div>
+      <div class="brand"><span id="logoSprite"></span><h1>Blip</h1></div>
+      <p class="tag">Say what you need to do. Finish it. Watch your pixel alien grow.</p>
+    </div>
+    <p class="sample-note">Tap the red button, allow the microphone, and say a few things you need to do. Works best in Chrome or Safari. If the mic is unavailable, Blip plays a sample sentence; typing always works.</p>
+  </header>
+
+  <div class="grid">
+    <!-- PHONE -->
+    <div class="phone-col">
+      <div class="phone"><div class="screen" id="screen">
+        <div class="status"><span id="clock">9:41</span><span id="dayLabel">Day 5</span></div>
+
+        <!-- Today -->
+        <section class="view" id="vToday" aria-label="Today">
+          <div class="hud">
+            <div class="pet" id="hudPet"></div>
+            <div class="meta">
+              <div class="row"><span class="name" id="hudName">Blip</span><span class="lv" id="hudLv">LV 1</span></div>
+              <div class="bar"><i id="hudBar"></i></div>
+              <div class="row"><span class="xptext" id="hudXp">40 / 60 XP</span><span class="streak" id="hudStreak"></span></div>
+            </div>
+          </div>
+          <div class="sec-h"><h3>Today</h3><span><button class="btn btn-small" id="introBtn">How it works</button></span></div>
+          <ul class="tasks" id="taskList"></ul>
+          <p class="hint hint-center">Tap the red button and say everything on your mind.</p>
+        </section>
+
+        <!-- Blip -->
+        <section class="view" id="vBlip" aria-label="Blip" hidden>
+          <div class="stage">
+            <div class="big"><div class="bob" id="bigPet"></div></div>
+            <span class="lv" id="stageLv">LV 1</span>
+            <h3 id="stageName">Pod</h3>
+            <p class="hint" id="stageMood">Blip is waiting for you to finish something.</p>
+            <div class="stage-progress"><div class="bar"><i id="stageBar"></i></div><p class="xptext" id="stageXp"></p></div>
+          </div>
+          <div class="stats">
+            <div class="stat"><b id="sDone">0</b><span>tasks done</span></div>
+            <div class="stat"><b id="sStreak">0</b><span>day streak</span></div>
+            <div class="stat"><b id="sXp">0</b><span>total XP</span></div>
+          </div>
+          <div class="sec-h"><h3>This week</h3><span>green = finished at least one task</span></div>
+          <div class="week" id="week"></div>
+          <div class="sec-h"><h3>Badges</h3><span id="badgeCount"></span></div>
+          <div class="badges" id="badges"></div>
+        </section>
+
+        <nav class="dock">
+          <button class="tab" id="tabToday" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg>Today</button>
+          <button class="mic" id="micBtn" aria-label="Talk to add tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></button>
+          <button class="tab" id="tabBlip" aria-current="false"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h2v2H6zM16 4h2v2h-2zM8 6h8v2H8zM6 8h12v2H6zM4 10h16v4H4zM4 14h2v4H4zM18 14h2v4h-2zM8 16h3v2H8zM13 16h3v2h-3z"/><path fill="var(--screen)" d="M8 10h2v2H8zM14 10h2v2h-2z"/></svg>Blip</button>
+        </nav>
+
+        <!-- Talk sheet -->
+        <div class="sheet" id="talkSheet" hidden>
+          <div class="panel">
+            <div class="sec-h"><h3 id="talkTitle">Listening…</h3><button class="btn btn-compact" id="talkClose">Close</button></div>
+            <div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <p class="hint" id="modeNote"></p>
+            <div class="transcript" id="transcript"></div>
+            <button class="btn primary block" id="talkDone" hidden>Done</button>
+            <div id="parsedWrap" hidden>
+              <p class="hint" id="parsedHint">Tap a priority to change it, × to drop one. Wrong split? Add a comma in the box below and tap Parse.</p>
+              <ul class="parsed" id="parsed"></ul>
+            </div>
+            <form class="typebox" id="typeForm">
+              <input id="typeInput" type="text" placeholder="Or type: study at 3pm and buy milk" aria-label="Type tasks">
+              <button class="btn" type="submit">Parse</button>
+            </form>
+            <button class="btn primary block" id="addAll" hidden>Add tasks</button>
+          </div>
+        </div>
+
+        <!-- Level up -->
+        <div class="overlay" id="lvlUp" hidden>
+          <div class="confetti" id="confetti"></div>
+          <span class="pixel level-eyebrow">LEVEL UP</span>
+          <div class="evolve"><span id="evoFrom"></span><span class="arrow">&gt;</span><span class="to" id="evoTo"></span></div>
+          <h2 id="lvlTitle">Level 2</h2>
+          <p id="lvlText">Blip hatched!</p>
+          <span class="unlock" id="lvlUnlock">Unlocked: ...</span>
+          <button class="btn primary" id="lvlOk">Nice</button>
+        </div>
+
+        <!-- Intro -->
+        <div class="overlay intro" id="intro" hidden>
+          <div id="introArt"></div>
+          <h2 id="introTitle"></h2>
+          <p id="introText"></p>
+          <div class="dots" id="introDots"><i></i><i></i><i></i></div>
+          <button class="btn primary" id="introNext">Next</button>
+        </div>
+
+        <div class="toast" id="toast" hidden></div>
+      </div></div>
+
+      <div class="controls">
+        <button class="btn" id="nextDay">Skip to tomorrow</button>
+        <button class="btn" id="reset">Reset demo</button>
+        <p>Prototype controls: jump a day to test streaks, or start the demo over.</p>
+      </div>
+    </div>
+
+  </div>
+  <footer>Blip · IN4MATX 151 playtest build · progress is saved only in your browser</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "blip-task-pet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Vanilla JavaScript task pet prototype",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "node --test",
+    "check": "node scripts/check.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

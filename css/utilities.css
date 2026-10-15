@@ -1,0 +1,10 @@
+/* Component details extracted from the page markup. */
+.btn-small{padding:4px 10px;font-size:12px}
+.btn-compact{padding:4px 10px}
+.hint-center{text-align:center}
+.stage-progress{width:100%}
+#stageXp{margin-top:4px}
+#parsedHint{margin-bottom:6px}
+.level-eyebrow{opacity:.7}
+#introArt{height:110px;display:grid;place-items:center}
+.progress-form{display:inline-flex;align-items:center;gap:8px}
