@@ -1,9 +1,11 @@
+import { isBlipColor } from '../config/art.js';
 import { STORAGE_KEY, XP, BADGES } from '../config/game.js';
 import { fresh } from '../state/initial-state.js';
 
 /** Validate the existing v1 shape before it reaches rendering or domain code. */
 export function isValidState(state) {
   if (!state || typeof state !== 'object') return false;
+  if (state.color !== null && !isBlipColor(state.color)) return false;
   const nonnegative = value => Number.isSafeInteger(value) && value >= 0;
   if (!['xp', 'streak', 'doneTotal', 'sample'].every(key => nonnegative(state[key]))) return false;
   if (!Number.isSafeInteger(state.day) || state.day < 1) return false;
@@ -27,6 +29,10 @@ export function createStorage(getStorage = () => window.localStorage) {
     load() {
       try {
         const state = JSON.parse(getStorage().getItem(STORAGE_KEY));
+        // Migrate pre-color v1 saves without resetting XP, tasks, or badges.
+        if (state && typeof state === 'object' && !Object.hasOwn(state, 'color')) {
+          state.color = null;
+        }
         return isValidState(state) ? state : fresh();
       } catch {
         return fresh();

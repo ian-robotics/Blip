@@ -1,9 +1,9 @@
 export const LEVELS=[
   {lv:1,xp:0,form:"pod",name:"Pod",unlock:"Blip arrives as a pod"},
   {lv:2,xp:60,form:"baby",name:"Hatchling",unlock:"Blip hatches"},
-  {lv:3,xp:140,form:"hat",name:"Hatchling + cap",unlock:"First outfit: gold cap"},
-  {lv:4,xp:250,form:"king",name:"Invader King",unlock:"Final form and crown"},
-  {lv:5,xp:400,form:"king",name:"Invader King",unlock:"Night-sky home screen"}
+  {lv:3,xp:140,form:"hat",name:"Evolved Blip",unlock:"Blip grows into a new form"},
+  {lv:4,xp:250,form:"king",name:"Mature Blip",unlock:"Blip reaches its mature form"},
+  {lv:5,xp:400,form:"king",name:"Mature Blip",unlock:"Night-sky home screen"}
 ];
 export const XP={high:30,normal:20,low:10};
 export const BADGES=[

@@ -2,12 +2,12 @@ import { BADGES } from './config/game.js';
 import { createStorage } from './services/storage.js';
 import { createStore } from './state/store.js';
 import { $ } from './ui/dom.js';
-import { sprite } from './ui/sprites.js';
 import { render } from './ui/render.js';
 import { toast, levelUp } from './ui/feedback.js';
 import { initNavigation, showView } from './ui/navigation.js';
 import { initIntro } from './ui/intro.js';
 import { initTalk } from './ui/talk.js';
+import { initColorPicker } from './ui/color-picker.js';
 
 // Composition root: connect domain state to browser UI and bind page actions once.
 const store = createStore(createStorage());
@@ -22,8 +22,9 @@ function cancelFeedback() {
 }
 
 initNavigation();
-initIntro();
+const intro = initIntro(() => store.getState().color);
 const talk = initTalk(store);
+const colorPicker = initColorPicker(store, () => intro.open());
 store.subscribe((state, events) => {
   render(state);
   for (const event of events) {
@@ -44,7 +45,7 @@ store.subscribe((state, events) => {
         break;
       }
       case 'level-up':
-        later(() => levelUp(event.from, event.to), 650);
+        later(() => levelUp(event.from, event.to, state.color), 650);
         break;
       case 'day-advanced':
         showView('today');
@@ -57,6 +58,7 @@ store.subscribe((state, events) => {
         showView('today');
         $('lvlUp').hidden = true;
         $('intro').hidden = true;
+        colorPicker.open();
         toast('Demo reset to the starting state.');
         break;
     }
@@ -74,7 +76,10 @@ $('taskList').addEventListener('click', event => {
 $('lvlOk').onclick = () => { $('lvlUp').hidden = true; };
 $('nextDay').onclick = () => store.advanceDay();
 $('reset').onclick = () => store.reset();
-$('logoSprite').innerHTML = sprite('baby', 5);
 const now = new Date();
 $('clock').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 render(store.getState());
+
+if (store.getState().color === null) {
+  colorPicker.open();
+}

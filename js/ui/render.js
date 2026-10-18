@@ -5,8 +5,9 @@ import { sprite } from './sprites.js';
 
 export function render(S){
   const L=levelOf(S.xp),N=nextOf(L);
+  $("logoSprite").innerHTML=sprite(L.form,5,{},S.color);
   const pct=N?((S.xp-L.xp)/(N.xp-L.xp))*100:100;
-  $("hudPet").innerHTML=sprite(L.form,L.form==="pod"?5:4);
+  $("hudPet").innerHTML=sprite(L.form,L.form==="pod"?5:4,{},S.color);
   $("hudLv").textContent="LV "+L.lv;
   $("hudName").textContent="Blip · "+L.name;
   $("hudBar").style.width=pct+"%";
@@ -23,7 +24,7 @@ export function render(S){
     <button class="del" data-act="del" aria-label="Delete ${esc(t.title)}">×</button></li>`).join("");
 
   // Blip tab
-  $("bigPet").innerHTML=sprite(L.form,L.form==="pod"?11:9);
+  $("bigPet").innerHTML=sprite(L.form,L.form==="pod"?11:9,{},S.color);
   $("stageLv").textContent="LV "+L.lv;
   $("stageName").textContent=L.name;
   const doneToday=S.tasks.filter(t=>t.done).length;

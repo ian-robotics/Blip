@@ -1,3 +1,4 @@
+import { isBlipColor } from '../config/art.js';
 import { SAMPLES } from '../config/game.js';
 import { fresh } from './initial-state.js';
 import { completeTask, addTasks, advanceDay } from '../domain/progression.js';
@@ -14,6 +15,12 @@ export function createStore(storage) {
   }
   return {
     getState: snapshot,
+    chooseColor(color) {
+      if (!isBlipColor(color)) return false;
+      state.color = color;
+      commit([{ type: 'color-chosen', color }]);
+      return true;
+    },
     subscribe(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);

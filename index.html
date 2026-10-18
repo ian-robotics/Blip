@@ -99,6 +99,16 @@
           <button class="btn primary" id="lvlOk">Nice</button>
         </div>
 
+        <!-- Choose a Blip -->
+        <div class="overlay color-picker" id="colorPicker" role="dialog"
+             aria-modal="true" aria-labelledby="colorPickerTitle"
+             aria-describedby="colorPickerDescription" hidden>
+          <h2 id="colorPickerTitle">Choose your Blip</h2>
+          <p id="colorPickerDescription">Pick a companion. Its color stays with it as it grows.</p>
+          <div class="color-options" id="colorOptions"></div>
+          <button class="btn primary" id="colorConfirm" type="button" disabled>Confirm</button>
+        </div>
+
         <!-- Intro -->
         <div class="overlay intro" id="intro" hidden>
           <div id="introArt"></div>

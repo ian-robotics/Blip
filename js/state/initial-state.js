@@ -1,4 +1,5 @@
 export function fresh(){return{
+  color:null,
   xp:40,streak:4,day:5,doneTotal:11,sample:0,badges:[],
   week:[true,true,true,true,false,false,false], // Mon..Sun, today = index 4 (Fri)
   tasks:[
