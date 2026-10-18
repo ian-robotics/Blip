@@ -2,3 +2,11 @@
 node_modules/
 coverage/
 *.log
+
+# Local architecture, interface, and development documentation
+/docs/
+
+# Local environment configuration and credentials
+.env
+.env.*
+!.env.example
