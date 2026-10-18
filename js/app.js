@@ -1,13 +1,14 @@
-import { BADGES } from './config/game.js';
-import { createStorage } from './services/storage.js';
-import { createStore } from './state/store.js';
+import { BADGES } from './config/game.js?v=daily-demo-1';
+import { createStorage } from './services/storage.js?v=weekly-history-2';
+import { createStore } from './state/store.js?v=daily-demo-1';
 import { $ } from './ui/dom.js';
-import { render } from './ui/render.js';
+import { render } from './ui/render.js?v=week-grid-1';
 import { toast, levelUp } from './ui/feedback.js';
 import { initNavigation, showView } from './ui/navigation.js';
 import { initIntro } from './ui/intro.js';
 import { initTalk } from './ui/talk.js';
 import { initColorPicker } from './ui/color-picker.js';
+import { initHistory } from './ui/history.js?v=week-grid-1';
 
 // Composition root: connect domain state to browser UI and bind page actions once.
 const store = createStore(createStorage());
@@ -25,8 +26,30 @@ initNavigation();
 const intro = initIntro(() => store.getState().color);
 const talk = initTalk(store);
 const colorPicker = initColorPicker(store, () => intro.open());
+const history = initHistory(store, () => {
+  talk.close();
+  cancelFeedback();
+  $('lvlUp').hidden = true;
+  $('toast').hidden = true;
+  refresh(store.getState());
+  showView('today');
+  $('vToday').scrollTop = 0;
+});
+function refresh(state) {
+  // Resolve and render the page before announcing the selected snapshot.
+  // A failed page render must not leave a misleading historical title.
+  const { displayed, reviewing } = history.getView(state);
+  render(displayed, { readOnly: reviewing, currentState: state });
+  history.render(state);
+}
 store.subscribe((state, events) => {
-  render(state);
+  if (events.some(event => event.type === 'day-advanced' || event.type === 'reset')) {
+    history.reset(state);
+    cancelFeedback();
+    talk.close();
+    $('lvlUp').hidden = true;
+  }
+  refresh(state);
   for (const event of events) {
     switch (event.type) {
       case 'badge': {
@@ -66,6 +89,7 @@ store.subscribe((state, events) => {
 });
 
 $('taskList').addEventListener('click', event => {
+  if (history.isReviewing()) return;
   const button = event.target.closest('button[data-act]');
   const row = button?.closest('.task');
   if (!row) return;
@@ -74,11 +98,13 @@ $('taskList').addEventListener('click', event => {
   if (button.dataset.act === 'done') store.completeTask(id);
 });
 $('lvlOk').onclick = () => { $('lvlUp').hidden = true; };
-$('nextDay').onclick = () => store.advanceDay();
+$('nextDay').onclick = () => {
+  if (!history.isReviewing()) store.advanceDay();
+};
 $('reset').onclick = () => store.reset();
 const now = new Date();
 $('clock').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-render(store.getState());
+refresh(store.getState());
 
 if (store.getState().color === null) {
   colorPicker.open();

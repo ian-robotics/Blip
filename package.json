@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Vanilla JavaScript task pet prototype",
   "scripts": {
-    "start": "python3 -m http.server 8000",
+    "start": "python3 scripts/serve.py",
     "test": "node --test",
     "check": "node scripts/check.mjs"
   },

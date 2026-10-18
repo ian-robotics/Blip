@@ -1,9 +1,9 @@
-import { XP, BADGES, DAYS } from '../config/game.js';
-import { levelOf, nextOf, todayIdx } from '../domain/progression.js';
+import { XP, BADGES, DAYS } from '../config/game.js?v=daily-demo-1';
+import { levelOf, nextOf, todayIdx } from '../domain/progression.js?v=daily-demo-1';
 import { $, esc } from './dom.js';
 import { sprite } from './sprites.js';
 
-export function render(S){
+export function render(S, { readOnly = false, currentState = S } = {}){
   const L=levelOf(S.xp),N=nextOf(L);
   $("logoSprite").innerHTML=sprite(L.form,5,{},S.color);
   const pct=N?((S.xp-L.xp)/(N.xp-L.xp))*100:100;
@@ -16,12 +16,12 @@ export function render(S){
   $("dayLabel").textContent="Day "+S.day+" · "+DAYS[todayIdx(S)];
 
   const list=$("taskList");
-  if(!S.tasks.length){list.innerHTML=`<li class="empty">No tasks yet. Tap the red button and say what you need to do.</li>`;}
+  if(!S.tasks.length){list.innerHTML=`<li class="empty">${readOnly ? "No tasks saved for this day." : "No tasks yet. Tap the red button and say what you need to do."}</li>`;}
   else list.innerHTML=S.tasks.map(t=>`<li class="task${t.done?" done":""}" data-id="${t.id}">
-    <button class="chk" data-act="done" aria-label="Complete ${esc(t.title)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 7l3.5 3.5L12 3"/></svg></button>
+    <button class="chk" data-act="done" ${readOnly ? 'disabled' : ''} aria-label="Complete ${esc(t.title)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 7l3.5 3.5L12 3"/></svg></button>
     <div class="t-body"><div class="t-title">${esc(t.title)}</div><div class="chips"><span class="chip ${t.prio}">${t.prio}</span>${t.time?`<span class="chip">${esc(t.time)}</span>`:""}</div></div>
     <span class="xpv">+${XP[t.prio]}</span>
-    <button class="del" data-act="del" aria-label="Delete ${esc(t.title)}">×</button></li>`).join("");
+    <button class="del" data-act="del" ${readOnly ? 'disabled' : ''} aria-label="Delete ${esc(t.title)}">×</button></li>`).join("");
 
   // Blip tab
   $("bigPet").innerHTML=sprite(L.form,L.form==="pod"?11:9,{},S.color);
@@ -32,7 +32,16 @@ export function render(S){
   $("stageBar").style.width=pct+"%";
   $("stageXp").textContent=N?`${N.xp-S.xp} XP until level ${N.lv}`:"Max level reached";
   $("sDone").textContent=S.doneTotal;$("sStreak").textContent=S.streak;$("sXp").textContent=S.xp;
-  $("week").innerHTML=DAYS.map((d,i)=>`<div><i class="${S.week[i]?"on":""} ${i===todayIdx(S)?"today":""}"></i>${d}</div>`).join("");
+  // Keep the whole unlocked week navigable while displaying an older snapshot.
+  $("week").innerHTML=DAYS.map((label,index)=>{
+    const day=index+1;
+    const current=day===currentState.day;
+    const available=current || currentState.history?.some(snapshot=>snapshot.day===day);
+    const description=current ? "current progress" : available ? "saved snapshot" : "not available";
+    return `<button type="button" class="week-day" data-day="${day}"
+      ${available ? "" : "disabled"} aria-label="Day ${day}, ${label}, ${description}"
+      aria-pressed="${day===S.day}"><span class="week-square ${currentState.week[index]?"on":""} ${current?"today":""}" aria-hidden="true"></span>${label}</button>`;
+  }).join("");
   $("badges").innerHTML=BADGES.map(b=>`<div class="badge${S.badges.includes(b.id)?" got":""}"><span class="ico">${b.ico}</span><span><b>${b.name}</b><small>${b.desc}</small></span></div>`).join("");
   $("badgeCount").textContent=`${S.badges.length} of ${BADGES.length}`;
 

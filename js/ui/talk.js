@@ -1,4 +1,4 @@
-import { XP } from '../config/game.js';
+import { XP } from '../config/game.js?v=daily-demo-1';
 import { parse } from '../domain/parser.js';
 import { createSpeechService } from '../services/speech.js';
 import { $, esc } from './dom.js';

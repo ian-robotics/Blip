@@ -1,4 +1,4 @@
-import { LEVELS, XP } from '../config/game.js';
+import { LEVELS, XP, DEMO_TASKS_BY_DAY } from '../config/game.js?v=daily-demo-1';
 
 export function levelOf(xp) {
   return LEVELS.reduce((current, level) => xp >= level.xp ? level : current, LEVELS[0]);
@@ -47,14 +47,37 @@ export function addTasks(state, drafts) {
   return events;
 }
 
+export function createDaySnapshot(state) {
+  const { day, color, xp, streak, doneTotal, badges, week, tasks } = state;
+  return structuredClone({ day, color, xp, streak, doneTotal, badges, week, tasks });
+}
+
 export function advanceDay(state) {
+  if (state.day >= 7) return [];
+  state.history.push(createDaySnapshot(state));
   const did = state.tasks.some(task => task.done);
   state.streak = did ? state.streak + 1 : 0;
   state.day++;
-  if (todayIdx(state) === 0) state.week = Array(7).fill(false);
   state.tasks = state.tasks.filter(task => !task.done);
+
+  const demoTasks = DEMO_TASKS_BY_DAY[state.day] ?? [];
+
+  for (const task of demoTasks) {
+    state.tasks.push({
+      ...task,
+      id: state.nextId++,
+      done: false
+    });
+  }
+
   const events = [];
-  if (state.streak >= 5) award(state, 'roll', events);
-  events.push({ type: 'day-advanced', did, streak: state.streak });
+  if (state.streak >= 5) {
+    award(state, 'roll', events);
+  }
+  events.push({
+    type: 'day-advanced',
+    did,
+    streak: state.streak
+  });
   return events;
 }
