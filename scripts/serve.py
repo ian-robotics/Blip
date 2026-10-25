@@ -1,11 +1,16 @@
 """Local development server and server-only task parsing endpoint."""
 import json
+import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit, unquote
 from llm_parser import parse_tasks, ParseUnavailable
 
 ROOT = Path(__file__).resolve().parent.parent
+ALLOWED_ORIGINS = set(os.environ.get('ALLOWED_ORIGINS',
+    'http://localhost:8000,http://127.0.0.1:8000,https://ian-robotics.github.io'
+).split(','))
+ALLOWED_ORIGINS = {value.strip() for value in ALLOWED_ORIGINS if value.strip()}
 
 
 class DevelopmentHandler(SimpleHTTPRequestHandler):
@@ -14,6 +19,10 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header('Cache-Control', 'no-store, max-age=0')
+        origin = self.headers.get('Origin')
+        if origin in ALLOWED_ORIGINS:
+            self.send_header('Access-Control-Allow-Origin', origin)
+            self.send_header('Vary', 'Origin')
         super().end_headers()
 
     def list_directory(self, path):
@@ -38,11 +47,28 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def do_GET(self):
+        if self.path == '/health':
+            return self.respond(200, {'status': 'ok'})
+        return super().do_GET()
+
+    def do_OPTIONS(self):
+        if self.path != '/api/parse':
+            return self.respond(404, {'error': 'not_found'})
+        if self.headers.get('Origin') not in ALLOWED_ORIGINS:
+            return self.respond(403, {'error': 'origin_rejected'})
+        self.send_response(204)
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Access-Control-Max-Age', '600')
+        self.send_header('Content-Length', '0')
+        self.end_headers()
+
     def do_POST(self):
         if self.path != '/api/parse':
             return self.respond(404, {'error': 'not_found'})
         origin = self.headers.get('Origin')
-        if origin and origin not in ('http://localhost:8000', 'http://127.0.0.1:8000'):
+        if origin and origin not in ALLOWED_ORIGINS:
             return self.respond(403, {'error': 'origin_rejected'})
         try:
             length = int(self.headers.get('Content-Length', '0'))
@@ -63,8 +89,10 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == '__main__':
-    print('Blip: http://localhost:8000', flush=True)
+    host = '0.0.0.0' if os.environ.get('PORT') else '127.0.0.1'
+    port = int(os.environ.get('PORT', '8000'))
+    print(f'Blip listening on {host}:{port}', flush=True)
     try:
-        ThreadingHTTPServer(('127.0.0.1', 8000), DevelopmentHandler).serve_forever()
+        ThreadingHTTPServer((host, port), DevelopmentHandler).serve_forever()
     except KeyboardInterrupt:
         pass

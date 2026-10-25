@@ -1,13 +1,14 @@
+import { taskApiUrl } from '../config/api.js';
 import { XP } from '../config/game.js';
 
 export async function parseTasks(text, { signal } = {}) {
   try {
-    const response = await fetch('/api/parse', {
+    const response = await fetch(taskApiUrl(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, now: new Date().toISOString(),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, language: navigator.language }),
-      signal: AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(15000)])
+      signal: AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(90000)])
     });
     if (!response.ok) {
       const failure = await response.json().catch(() => ({}));

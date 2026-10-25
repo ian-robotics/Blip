@@ -85,6 +85,7 @@ export function initTalk(store) {
       $('addAll').hidden = true;
       $('talkTitle').textContent = 'Could not process tasks';
       const messages = {
+        backend_not_configured: 'The hosted AI backend URL has not been configured.',
         not_configured: 'The AI service is not configured.',
         key_invalid: 'The AI credentials need updating.',
         key_expired: 'The AI credentials have expired.',
