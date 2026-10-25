@@ -3,13 +3,14 @@
 .sheet[hidden]{display:none!important}
 .sheet .panel{width:100%;background:var(--surface);border-radius:26px 26px 0 0;padding:18px;display:flex;flex-direction:column;gap:12px;max-height:88%;overflow-y:auto;animation:rise .25s ease-out}
 @keyframes rise{from{transform:translateY(40px);opacity:0}}
+.sheet .panel > *{flex-shrink:0}
 .panel h3{font-size:18px}
 .wave{display:flex;align-items:center;justify-content:center;gap:4px;height:40px}
 .wave i{width:5px;border-radius:3px;background:var(--accent);animation:wv .9s ease-in-out infinite}
 .wave i:nth-child(2n){animation-delay:.15s}.wave i:nth-child(3n){animation-delay:.3s}.wave i:nth-child(5n){animation-delay:.45s}
 @keyframes wv{0%,100%{height:8px}50%{height:36px}}
 .wave.off i{animation:none;height:6px;opacity:.4}
-.transcript{min-height:52px;font-size:16px;line-height:1.45;background:var(--bg);border-radius:14px;padding:12px}
+.transcript{overflow-wrap:anywhere;white-space:pre-wrap;min-height:52px;font-size:16px;line-height:1.45;background:var(--bg);border-radius:14px;padding:12px}
 .transcript .caret{display:inline-block;width:2px;height:1em;background:var(--accent);vertical-align:-2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .typebox{display:flex;gap:8px}
@@ -40,12 +41,39 @@
 
 .toast{position:absolute;left:16px;right:16px;top:44px;z-index:9;background:var(--gold);color:#1A1D33;border-radius:14px;padding:10px 14px;font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center;animation:rise .25s ease-out}
 .toast[hidden]{display:none!important}
-
-
 /* First-time companion selection */
-.color-picker{overflow-y:auto}
-.color-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%}
-.color-option{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;border:2px solid transparent;border-radius:16px;background:var(--surface);color:var(--ink);font-weight:700}
-.color-option .blip-art{width:72px;height:72px}
-.color-option[aria-pressed="true"]{border-color:var(--accent)}
-.color-picker .btn:disabled{opacity:.45;cursor:not-allowed}
+.color-picker {overflow-y: auto;}
+
+.color-options {display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));gap: 12px;width: 100%;
+}
+
+.color-option {display: flex;flex-direction: column;align-items: center;
+gap: 8px;padding: 12px;border: 2px solid transparent;border-radius: 16px;
+background: var(--surface);color: var(--ink);font-weight: 700;
+}
+
+.color-option .blip-art {
+width: 72px; height: 72px;
+}
+
+.color-option[aria-pressed="true"] {
+border-color: var(--accent);
+}
+
+.color-picker .btn:disabled {
+opacity: 0.45;
+cursor: not-allowed;
+}
+
+/* Task entry and draft review */
+#inputChoices{display:flex;gap:8px}
+#inputChoices .btn{flex:1}
+#wave[hidden],#transcript[hidden],#typeForm[hidden],#inputChoices[hidden]{display:none!important}
+.draft-fields{display:flex;flex-direction:column;gap:8px}
+.draft-fields label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.draft-fields input,.draft-fields select{box-sizing:border-box;width:100%;min-width:0;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--screen);color:var(--ink);font:inherit}
+
+/* The editable source appears once, above the review summary. */
+.typebox{align-items:flex-start}
+.typebox textarea{flex:1;min-width:0;box-sizing:border-box;resize:vertical;min-height:96px;max-height:220px;font:inherit;line-height:1.5;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--screen);color:var(--ink)}
+#taskSummary{padding:8px 0;overflow-wrap:anywhere}

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="./css/style.css">
-<script type="module" src="./js/app.js?v=daily-demo-1"></script>
+<script type="module" src="./js/app.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -25,7 +25,7 @@
     <!-- PHONE -->
     <div class="phone-col">
       <div class="phone"><div class="screen" id="screen">
-        <div class="status"><span id="clock">9:41</span><span id="dayLabel">Day 1</span></div>
+        <div class="status"><span id="clock">9:41</span><span id="dayLabel">Day 5</span></div>
 
         <section class="review-banner" id="reviewBanner" aria-label="Saved day" hidden>
           <div class="review-header">
@@ -72,26 +72,38 @@
 
         <nav class="dock">
           <button class="tab" id="tabToday" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg>Today</button>
-          <button class="mic" id="micBtn" aria-label="Talk to add tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></button>
+          <button class="mic" id="micBtn" type="button" aria-label="Add tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
           <button class="tab" id="tabBlip" aria-current="false"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h2v2H6zM16 4h2v2h-2zM8 6h8v2H8zM6 8h12v2H6zM4 10h16v4H4zM4 14h2v4H4zM18 14h2v4h-2zM8 16h3v2H8zM13 16h3v2h-3z"/><path fill="var(--screen)" d="M8 10h2v2H8zM14 10h2v2h-2z"/></svg>Blip</button>
         </nav>
 
         <!-- Talk sheet -->
         <div class="sheet" id="talkSheet" hidden>
           <div class="panel">
-            <div class="sec-h"><h3 id="talkTitle">Listening…</h3><button class="btn btn-compact" id="talkClose">Close</button></div>
-            <div class="wave" id="wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="sec-h"><h3 id="talkTitle"> Add tasks</h3><button class="btn btn-compact" id="talkClose">Close</button></div>
+          <!-- 鉴于语音输入不稳定 改为语音+文字识别输入-->
+          <div id="inputChoices" role="group" aria-label="Input method">
+            <button class="btn" id="voiceMode" type="button">
+              Voice input
+            </button>
+            <button class="btn" id="textMode" type="button">
+              Text input
+            </button>
+          </div>
+            <!-- 隐藏麦克风 CSS css/components/overlays.css-->
+            <div class="wave" id="wave" hidden><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
             <p class="hint" id="modeNote"></p>
-            <div class="transcript" id="transcript"></div>
+            <div class="transcript" id="transcript" hidden></div>
             <button class="btn primary block" id="talkDone" hidden>Done</button>
+            <form class="typebox" id="typeForm" hidden>
+              <textarea id="typeInput" rows="3" maxlength="4000" placeholder="Describe your tasks, then choose Review" aria-label="Task description"></textarea>
+              <button class="btn" type="submit">Review</button>
+            </form>
+            <p class="hint" id="taskSummary" role="status" hidden></p>
             <div id="parsedWrap" hidden>
-              <p class="hint" id="parsedHint">Tap a priority to change it, × to drop one. Wrong split? Add a comma in the box below and tap Parse.</p>
+              <p class="hint" id="parsedHint">Groq assigns priority and XP. Remove unwanted tasks, or edit your description and choose Review again.</p>
               <ul class="parsed" id="parsed"></ul>
             </div>
-            <form class="typebox" id="typeForm">
-              <input id="typeInput" type="text" placeholder="Or type: study at 3pm and buy milk" aria-label="Type tasks">
-              <button class="btn" type="submit">Parse</button>
-            </form>
+
             <button class="btn primary block" id="addAll" hidden>Add tasks</button>
           </div>
         </div>
@@ -107,15 +119,27 @@
           <button class="btn primary" id="lvlOk">Nice</button>
         </div>
 
-        <!-- Choose a Blip -->
+
+        <!-- Choose color -->
         <div class="overlay color-picker" id="colorPicker" role="dialog"
-             aria-modal="true" aria-labelledby="colorPickerTitle"
-             aria-describedby="colorPickerDescription" hidden>
-          <h2 id="colorPickerTitle">Choose your Blip</h2>
-          <p id="colorPickerDescription">Pick a companion. Its color stays with it as it grows.</p>
+        aria-modal="true" aria-labelledby="colorPickerTitle" aria-describedby="colorPickerDescription"
+        hidden>
+        <h2 id="colorPickerTitle">Choose your Blip</h2>
+          <p id="colorPickerDescription">
+            Pick a companion!
+          </p>
+
           <div class="color-options" id="colorOptions"></div>
-          <button class="btn primary" id="colorConfirm" type="button" disabled>Confirm</button>
-        </div>
+
+          <button
+            class="btn primary"
+            id="colorConfirm"
+            type="button"
+            disabled
+          >
+            Confirm
+          </button>
+      </div>
 
         <!-- Intro -->
         <div class="overlay intro" id="intro" hidden>
@@ -132,7 +156,7 @@
       <div class="controls">
         <button class="btn" id="nextDay">Skip to tomorrow</button>
         <button class="btn" id="reset">Reset demo</button>
-        <p>Seven-day demo: skip up to six times. Reset starts a new week.</p>
+        <p>Prototype controls: jump a day to test streaks, or start the demo over.</p>
       </div>
     </div>
 

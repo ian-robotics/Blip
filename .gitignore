@@ -9,3 +9,7 @@ coverage/
 
 # Local test suite
 /tests/
+
+# Python server cache
+__pycache__/
+*.pyc

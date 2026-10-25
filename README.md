@@ -19,3 +19,27 @@ Alternatively, run `npm start`. The development server disables caching so updat
 Open **http://localhost:8000** in your browser. Use the local server rather than opening `index.html` directly, since the app uses JavaScript modules.
 
 Voice input requires a supported browser and microphone permission. You can always type tasks instead.
+
+### Optional Groq task parsing
+
+Fill `GROQ_API_KEY` in the local `.env` file (use `.env.example` as a template).
+Use a new key, not one shared in chat. `.env` is ignored by Git and blocked by
+the development server. Set `GROQ_MODEL` to a model enabled in your Groq account
+that supports JSON mode. Set `GROQ_KEY_EXPIRES_AT` to the actual expiry date from
+the console (YYYY-MM-DD); this is a local check, not provider configuration.
+
+Run `npm start`, then open http://localhost:8000. Restart an older running server
+first. Both text and speech transcripts use `/api/parse`. No extra dependencies
+are required. The backend rereads environment settings per request. Real process
+environment variables override `.env`.
+
+Both typed input and speech transcripts must be parsed by Groq. API errors preserve
+input for retry and never create local-parser tasks. Groq assigns a locked priority
+and matching reward (low=10, normal=20, high=30 XP); the server validates this contract.
+Users can remove tasks or revise the source and reparse, but cannot edit task cards.
+Rewards persist with tasks and historical snapshots. Existing saves without a reward
+field continue to use the priority reward mapping. This is a local prototype: browser
+storage is user-controlled and these UI locks are not account-level anti-cheat controls.
+
+The local server binds to loopback and serves only app assets. It is a development
+server; a public deployment needs a hosted backend with authentication/rate limits.

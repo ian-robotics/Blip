@@ -1,22 +1,35 @@
-/** Color IDs match the PNG filenames in every stage directory. */
+/** Stage artwork. Numbered PNGs are alternate designs, not animation frames. */
 export const BLIP_COLORS = ['blue', 'pink', 'white', 'yellow'];
-export const isBlipColor = color => BLIP_COLORS.includes(color);
 
-// Retain form keys to keep existing level rules and saved progress compatible.
-export const BLIP_ART = {
-  pod: { stage: 0, label: 'Blip pod' },
-  baby: { stage: 1, label: 'Blip hatchling' },
-  hat: { stage: 2, label: 'Evolved Blip' },
-  king: { stage: 3, label: 'Mature Blip' }
-};
+export function isBlipColor(color) {
+  return BLIP_COLORS.includes(color);
+}
+const image = stage => new URL(
+  `../../assets/blip/stage${stage}/blue.png`,
+  import.meta.url
+).href;
 
-export function getBlipImage(form, color) {
-  const art = BLIP_ART[form];
-  if (!art) throw new Error(`Unknown Blip form: ${form}`);
-  // Blue is only a display fallback; null still means no choice has been saved.
-  const selected = isBlipColor(color) ? color : 'blue';
+const STAGES = {
+  pod: 0,
+  baby: 1,
+  hat: 2,
+  king: 3
+}
+
+export function getBlipImage(form, color = 'blue') {
+  const stage = STAGES[form];
+  if (stage === undefined) throw new Error(`Unknown Blip form: ${form}`);
+  const selectedColor = isBlipColor(color) ? color : 'blue';
   return new URL(
-    `../../assets/blip/stage${art.stage}/${selected}.png`,
+    `../../assets/blip/stage${stage}/${selectedColor}.png`,
     import.meta.url
   ).href;
 }
+
+// Keep existing form keys so saved progress and level rules remain compatible.
+export const BLIP_ART = {
+  pod: { src: image(0), label: 'Blip pod' },
+  baby: { src: image(1), label: 'Blip hatchling' },
+  hat: { src: image(2), label: 'Evolved Blip' },
+  king: { src: image(3), label: 'Mature Blip' }
+};

@@ -24,10 +24,10 @@ export function completeTask(state, id) {
   if (!task || task.done) return [];
   const before = levelOf(state.xp);
   task.done = true;
-  state.xp += XP[task.prio];
+  state.xp += task.xp ?? XP[task.prio];
   state.doneTotal++;
   state.week[todayIdx(state)] = true;
-  const events = [{ type: 'task-completed', id, xp: XP[task.prio] }];
+  const events = [{ type: 'task-completed', id, xp: task.xp ?? XP[task.prio] }];
   if (state.tasks.every(task => task.done)) award(state, 'sweep', events);
   if (state.doneTotal >= 15) award(state, 'fifteen', events);
   const after = levelOf(state.xp);
@@ -38,10 +38,13 @@ export function completeTask(state, id) {
 }
 
 export function addTasks(state, drafts) {
+  if (drafts.some(task => Object.hasOwn(task, 'xp') && task.xp !== XP[task.prio])) {
+    throw new Error('Invalid task reward');
+  }
   const events = [];
   if (drafts.length >= 3) award(state, 'chat', events);
   for (const task of drafts) {
-    state.tasks.push({ title: task.title, time: task.time, prio: task.prio, id: state.nextId++, done: false });
+    state.tasks.push({ title: task.title, time: task.time, prio: task.prio, ...(Object.hasOwn(task, 'xp') ? { xp: task.xp } : {}), id: state.nextId++, done: false });
   }
   state.tasks.sort((a, b) => a.done - b.done);
   return events;

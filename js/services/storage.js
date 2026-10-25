@@ -19,6 +19,7 @@ export function getProgressError(state) {
   for (const task of state.tasks) {
     if (!task || !Number.isSafeInteger(task.id) || task.id < 1 || ids.has(task.id)) return 'task IDs are invalid';
     ids.add(task.id);
+    if (Object.hasOwn(task, 'xp') && task.xp !== XP[task.prio]) return 'task reward is invalid';
     if (typeof task.title !== 'string' || typeof task.time !== 'string'
       || !Object.hasOwn(XP, task.prio) || typeof task.done !== 'boolean') return 'task fields are invalid';
   }
