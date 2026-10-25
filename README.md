@@ -6,6 +6,10 @@ Built with HTML, CSS, and vanilla JavaScript. Progress is saved in your browser.
 
 Try a seven-day demo: skip up to six times, then tap a day in Blip’s “This week” grid to review saved end-of-day progress. Past days are read-only.
 
+## Try Demo
+https://ian-robotics.github.io/Blip/
+
+
 ## Run locally
 
 With Python 3 installed, run this command from the project directory:
