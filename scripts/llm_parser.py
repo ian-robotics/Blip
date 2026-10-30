@@ -25,12 +25,22 @@ class ParseUnavailable(Exception):
     pass
 
 
+# Text with nothing to do never reaches the model, so it cannot become a task.
+NON_TASK = re.compile(
+    r"(hi+|hey+|hello+|yo|sup|ok(ay)?|thanks?( you)?|test(ing)?|good (morning|afternoon|evening|night)"
+    r"|你好|您好|嗨|哈喽|谢谢|测试|好的)[\s!.,?！。，？~]*", re.I)
+# A high priority must be backed by the model's own evidence scores.
+MIN_HIGH_SCORE = 30
+
+
 def parse_tasks(data):
     data = dict(data)
     # Remove only the exact generated summary footer if pasted/dictated with input.
     data['text'] = re.sub(
         r"\b\d+ tasks?\s*·\s*\d+ high priority\s*·\s*Review deadlines before adding\.?",
         '', data['text'], flags=re.I).strip()
+    if NON_TASK.fullmatch(data['text']):
+        return {'tasks': [], 'source': 'groq'}
     config = settings()
     key = config.get('GROQ_API_KEY', '')
     if not key:
@@ -72,7 +82,7 @@ Evidence scores: urgency 0..40, importance 0..35, dependency 0..15, emphasis 0..
 Scores describe evidence, not user-editable settings. Keep them grounded; no evidence -> 0.
 Set needsConfirmation true only for ambiguous task meaning/deadline, not for locking priority.
 Reason must explain the actual decision briefly, not just repeat the title.
-Users may remove a task or revise their source and reparse; they cannot edit priority or XP.
+Users may adjust priority before adding tasks, so always give your own honest assessment.
 """
     body = {
         'model': config.get('GROQ_MODEL') or 'openai/gpt-oss-20b',
@@ -109,6 +119,8 @@ Users may remove a task or revise their source and reparse; they cannot edit pri
             rewards = {'low': 10, 'normal': 20, 'high': 30}
             if priority not in rewards or type(xp) is not int or xp != rewards[priority]:
                 raise ValueError()
+            if priority == 'high' and score < MIN_HIGH_SCORE:
+                priority, xp = 'normal', rewards['normal']
             clean.append(dict(title=title.strip(), time=time.strip(), prio=priority,
                               score=score, xp=xp, reason=reason, needsConfirmation=uncertain))
         return {'tasks': clean, 'source': 'groq'}
