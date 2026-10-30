@@ -38,9 +38,10 @@ are required. The backend rereads environment settings per request. Real process
 environment variables override `.env`.
 
 Both typed input and speech transcripts must be parsed by Groq. API errors preserve
-input for retry and never create local-parser tasks. Groq assigns a locked priority
+input for retry and never create local-parser tasks. Groq suggests a priority
 and matching reward (low=10, normal=20, high=30 XP); the server validates this contract.
-Users can remove tasks or revise the source and reparse, but cannot edit task cards.
+On the confirmation screen users can tap a priority to change it, and the reward follows.
+They can also remove tasks or revise the source and reparse. Added task cards cannot be edited.
 Rewards persist with tasks and historical snapshots. Existing saves without a reward
 field continue to use the priority reward mapping. This is a local prototype: browser
 storage is user-controlled and these UI locks are not account-level anti-cheat controls.

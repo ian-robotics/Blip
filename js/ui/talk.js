@@ -1,3 +1,4 @@
+import { XP } from '../config/game.js?v=daily-demo-1';
 import { parseTasks, summarize } from '../services/task-parser.js';
 import { createSpeechService } from '../services/speech.js';
 import { playSound } from '../services/sound.js';
@@ -46,7 +47,7 @@ export function initTalk(store) {
       <li>
         <div class="t-body draft-fields">
           <div class="t-title">${esc(task.title)}</div>
-          <div class="chips"><span class="chip ${task.prio}">${task.prio}</span><span class="chip">${task.xp} XP</span></div>
+          <div class="chips"><button type="button" class="chip cycle ${task.prio}" data-i="${index}" data-act="prio" aria-label="Priority ${task.prio}. Tap to change.">${task.prio} ▾</button><span class="chip">${task.xp} XP</span></div>
           <p class="hint">Deadline: ${esc(task.time || 'None specified')}</p>
           <p class="hint">${esc(task.reason || 'Priority and XP assigned by AI.')}${task.needsConfirmation ? ' · Check ambiguous details in your description.' : ''}</p>
         </div>
@@ -80,7 +81,7 @@ export function initTalk(store) {
       if (version !== parseVersion || $('talkSheet').hidden) return;
       pending = result.tasks;
       $('talkTitle').textContent = pending.length ? 'Confirm task details' : 'No tasks found';
-      $('modeNote').textContent = 'Priority and XP are assigned by Groq. To change details, revise your description and choose Review again.';
+      $('modeNote').textContent = 'Groq suggests priority and XP. Tap a priority to change it. To change other details, revise your description and choose Review again.';
       drawPending();
     } catch (error) {
       if (version !== parseVersion || controller.signal.aborted || $('talkSheet').hidden) return;
@@ -171,6 +172,17 @@ function open() {
     if (!button) return;
     const index = Number(button.dataset.i);
     if (!pending[index]) return;
+    if (button.dataset.act === 'prio') {
+      const task = pending[index];
+      task.prio = PRIORITIES[(PRIORITIES.indexOf(task.prio) + 1) % PRIORITIES.length];
+      task.xp = XP[task.prio];
+      task.reason = 'Priority set by you.';
+      task.needsConfirmation = false;
+      drawPending();
+      playSound('tap');
+      $('parsed').querySelector(`button[data-i="${index}"][data-act="prio"]`).focus();
+      return;
+    }
     if (button.dataset.act !== 'rm') return;
     pending.splice(index, 1);
     if (!pending.length) $('talkTitle').textContent = 'Nothing to add';
@@ -212,7 +224,7 @@ function open() {
 
   $('talkTitle').textContent = 'Type your tasks';
   $('modeNote').textContent =
-    'Describe your tasks, then choose Review. Groq assigns priority and XP.';
+    'Describe your tasks, then choose Review. Groq suggests priority and XP.';
 
   $('typeInput').focus();
 };
