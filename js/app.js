@@ -74,6 +74,20 @@ store.subscribe((state, events) => {
         }
         break;
       }
+      case 'task-undone': {
+        // Drop any pending level-up or badge popup from the completion being undone.
+        cancelFeedback();
+        $('lvlUp').hidden = true;
+        playSound('remove');
+        const row = $('taskList').querySelector(`[data-id="${event.id}"]`);
+        if (row) {
+          const label = document.createElement('span');
+          label.className = 'floatxp';
+          label.textContent = `-${event.xp} XP`;
+          row.appendChild(label);
+        }
+        break;
+      }
       case 'level-up':
         later(() => {
           levelUp(event.from, event.to, state.color);
@@ -109,7 +123,10 @@ $('taskList').addEventListener('click', event => {
     store.deleteTask(id);
     playSound('remove');
   }
-  if (button.dataset.act === 'done') store.completeTask(id);
+  if (button.dataset.act === 'done') {
+    if (row.classList.contains('done')) store.uncompleteTask(id);
+    else store.completeTask(id);
+  }
 });
 $('lvlOk').onclick = () => { $('lvlUp').hidden = true; };
 $('nextDay').onclick = () => {

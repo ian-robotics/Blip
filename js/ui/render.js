@@ -18,7 +18,7 @@ export function render(S, { readOnly = false, currentState = S } = {}){
   const list=$("taskList");
   if(!S.tasks.length){list.innerHTML=`<li class="empty">${readOnly ? "No tasks saved for this day." : "No tasks yet. Tap the red button and say what you need to do."}</li>`;}
   else list.innerHTML=S.tasks.map(t=>`<li class="task${t.done?" done":""}" data-id="${t.id}">
-    <button class="chk" data-act="done" ${readOnly ? 'disabled' : ''} aria-label="Complete ${esc(t.title)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 7l3.5 3.5L12 3"/></svg></button>
+    <button class="chk" data-act="done" ${readOnly ? 'disabled' : ''} aria-label="${t.done ? "Undo" : "Complete"} ${esc(t.title)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 7l3.5 3.5L12 3"/></svg></button>
     <div class="t-body"><div class="t-title">${esc(t.title)}</div><div class="chips"><span class="chip ${t.prio}">${t.prio}</span>${t.time?`<span class="chip">${esc(t.time)}</span>`:""}</div></div>
     <span class="xpv">+${t.xp ?? XP[t.prio]}</span>
     <button class="del" data-act="del" ${readOnly ? 'disabled' : ''} aria-label="Delete ${esc(t.title)}">×</button></li>`).join("");

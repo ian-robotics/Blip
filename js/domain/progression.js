@@ -37,6 +37,18 @@ export function completeTask(state, id) {
   return events;
 }
 
+/** Reverse a completion. Earned badges stay; a lost level drops back silently. */
+export function uncompleteTask(state, id) {
+  const task = state.tasks.find(task => task.id === id);
+  if (!task || !task.done) return [];
+  const xp = task.xp ?? XP[task.prio];
+  task.done = false;
+  state.xp = Math.max(0, state.xp - xp);
+  state.doneTotal = Math.max(0, state.doneTotal - 1);
+  state.week[todayIdx(state)] = state.tasks.some(task => task.done);
+  return [{ type: 'task-undone', id, xp }];
+}
+
 export function addTasks(state, drafts) {
   if (drafts.some(task => Object.hasOwn(task, 'xp') && task.xp !== XP[task.prio])) {
     throw new Error('Invalid task reward');
