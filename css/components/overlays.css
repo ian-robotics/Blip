@@ -77,3 +77,11 @@ cursor: not-allowed;
 .typebox{align-items:flex-start}
 .typebox textarea{flex:1;min-width:0;box-sizing:border-box;resize:vertical;min-height:96px;max-height:220px;font:inherit;line-height:1.5;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--screen);color:var(--ink)}
 #taskSummary{padding:8px 0;overflow-wrap:anywhere}
+
+.pet-name-field{display:flex;flex-direction:column;gap:4px;width:100%;font-size:13px;font-weight:700;text-align:left}
+.pet-name-field input,.rename-form input{box-sizing:border-box;width:100%;min-width:0;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--screen);color:var(--ink);font:inherit}
+.rename-form{display:flex;gap:8px;width:100%}
+.rename-form[hidden]{display:none}
+.login-form{display:flex;flex-direction:column;gap:12px;width:100%}
+.login-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;text-align:left}
+.login-form input{box-sizing:border-box;width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--screen);color:var(--ink);font:inherit}

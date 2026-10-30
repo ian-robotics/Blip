@@ -166,6 +166,18 @@
           <button class="btn primary" id="introNext">Next</button>
         </div>
 
+        <!-- Mock login: demo only, no real account -->
+        <div class="overlay login" id="login" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
+          <h2 id="loginTitle">Log in to Blip</h2>
+          <form class="login-form" id="loginForm">
+            <label>Username<input id="loginName" type="text" maxlength="24" required autocomplete="off"></label>
+            <label>Password<input id="loginPassword" type="password" required autocomplete="new-password"></label>
+            <button class="btn primary block" type="submit">Log in</button>
+          </form>
+          <button class="btn" id="loginGuest" type="button">Continue as guest</button>
+          <p class="hint">Demo only. No account is created and your password is not saved, so please don't use a real one.</p>
+        </div>
+
         <div class="toast" id="toast" hidden></div>
       </div></div>
 
@@ -173,6 +185,7 @@
         <button class="btn" id="nextDay">Skip to tomorrow</button>
         <button class="btn" id="reset">Reset demo</button>
         <button class="btn" id="soundToggle" type="button">Sound: on</button>
+        <button class="btn" id="logout" type="button">Log out</button>
         <p>Prototype controls: jump a day to test streaks, or start the demo over.</p>
       </div>
     </div>

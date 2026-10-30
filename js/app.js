@@ -11,6 +11,7 @@ import { initIntro } from './ui/intro.js';
 import { initTalk } from './ui/talk.js';
 import { initColorPicker } from './ui/color-picker.js';
 import { initHistory } from './ui/history.js?v=week-grid-1';
+import { initLogin } from './ui/login.js';
 
 // Composition root: connect domain state to browser UI and bind page actions once.
 const store = createStore(createStorage());
@@ -160,6 +161,6 @@ const now = new Date();
 $('clock').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 refresh(store.getState());
 
-if (store.getState().color === null) {
-  colorPicker.open();
-}
+initLogin(() => {
+  if (store.getState().color === null) colorPicker.open();
+});
