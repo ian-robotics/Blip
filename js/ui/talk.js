@@ -1,5 +1,6 @@
 import { parseTasks, summarize } from '../services/task-parser.js';
 import { createSpeechService } from '../services/speech.js';
+import { playSound } from '../services/sound.js';
 import { $, esc } from './dom.js';
 import { showView } from './navigation.js';
 
@@ -189,6 +190,7 @@ function open() {
   $('addAll').onclick = () => {
     if (!pending.length || parseRequest) return;
     store.addTasks(pending.map(task => ({ title: task.title, time: task.time, prio: task.prio, xp: task.xp })));
+    playSound('add');
     pending = [];
     close();
   };

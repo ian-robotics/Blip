@@ -1,5 +1,6 @@
 import { BADGES } from './config/game.js?v=daily-demo-1';
 import { createStorage } from './services/storage.js?v=weekly-history-2';
+import { playSound, isSoundOn, setSoundOn } from './services/sound.js';
 import { createStore } from './state/store.js?v=daily-demo-1';
 import { $ } from './ui/dom.js';
 import { render } from './ui/render.js?v=week-grid-1';
@@ -54,10 +55,16 @@ store.subscribe((state, events) => {
     switch (event.type) {
       case 'badge': {
         const badge = BADGES.find(badge => badge.id === event.id);
-        later(() => toast(`<span class="pixel">BADGE</span> ${badge.name}: ${badge.desc}`), 400);
+        // A level-up fanfare follows right after, so let it play alone.
+        const quiet = events.some(other => other.type === 'level-up');
+        later(() => {
+          toast(`<span class="pixel">BADGE</span> ${badge.name}: ${badge.desc}`);
+          if (!quiet) playSound('badge');
+        }, 400);
         break;
       }
       case 'task-completed': {
+        playSound('complete');
         const row = $('taskList').querySelector(`[data-id="${event.id}"]`);
         if (row) {
           const label = document.createElement('span');
@@ -68,9 +75,13 @@ store.subscribe((state, events) => {
         break;
       }
       case 'level-up':
-        later(() => levelUp(event.from, event.to, state.color), 650);
+        later(() => {
+          levelUp(event.from, event.to, state.color);
+          playSound('levelUp');
+        }, 650);
         break;
       case 'day-advanced':
+        playSound('newDay');
         showView('today');
         toast(event.did ? `New day. Streak is now ${event.streak} days.`
           : 'New day. You missed yesterday, so the streak reset. Blip kept its level.');
@@ -94,7 +105,10 @@ $('taskList').addEventListener('click', event => {
   const row = button?.closest('.task');
   if (!row) return;
   const id = Number(row.dataset.id);
-  if (button.dataset.act === 'del') store.deleteTask(id);
+  if (button.dataset.act === 'del') {
+    store.deleteTask(id);
+    playSound('remove');
+  }
   if (button.dataset.act === 'done') store.completeTask(id);
 });
 $('lvlOk').onclick = () => { $('lvlUp').hidden = true; };
@@ -102,6 +116,16 @@ $('nextDay').onclick = () => {
   if (!history.isReviewing()) store.advanceDay();
 };
 $('reset').onclick = () => store.reset();
+function drawSoundToggle() {
+  $('soundToggle').textContent = isSoundOn() ? 'Sound: on' : 'Sound: off';
+  $('soundToggle').setAttribute('aria-pressed', String(isSoundOn()));
+}
+$('soundToggle').onclick = () => {
+  setSoundOn(!isSoundOn());
+  drawSoundToggle();
+  playSound('tap');
+};
+drawSoundToggle();
 const now = new Date();
 $('clock').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 refresh(store.getState());

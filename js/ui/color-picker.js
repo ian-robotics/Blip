@@ -1,4 +1,5 @@
 import { BLIP_COLORS } from '../config/art.js';
+import { playSound } from '../services/sound.js';
 import { $ } from './dom.js';
 import { sprite } from './sprites.js';
 
@@ -46,6 +47,7 @@ export function initColorPicker(store, onConfirmed) {
     if (!button) return;
 
     selected = button.dataset.color;
+    playSound('tap');
 
     // Update existing buttons to preserve keyboard focus.
     for (const option of options.querySelectorAll('button')) {
@@ -61,6 +63,7 @@ export function initColorPicker(store, onConfirmed) {
   confirm.addEventListener('click', () => {
     if (!store.chooseColor(selected)) return;
 
+    playSound('add');
     panel.hidden = true;
     onConfirmed();
   });
