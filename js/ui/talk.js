@@ -3,6 +3,9 @@ import { createSpeechService } from '../services/speech.js';
 import { playSound } from '../services/sound.js';
 import { $, esc } from './dom.js';
 import { showView } from './navigation.js';
+import { petName } from '../domain/progression.js?v=daily-demo-1';
+
+const PRIORITIES = ['low', 'normal', 'high'];
 
 /** Owns draft tasks and demo timers; commits confirmed tasks through the store. */
 export function initTalk(store) {
@@ -119,7 +122,7 @@ export function initTalk(store) {
             $('textMode').click();
             $('modeNote').textContent = 'The microphone is unavailable. Please type your tasks.';
         } else {
-          $('talkTitle').textContent = "Blip didn't hear anything";
+          $('talkTitle').textContent = `${petName(store.getState())} didn't hear anything`;
           $('wave').classList.add('off');
 
           $('wave').hidden = true;

@@ -32,6 +32,7 @@ export const isValidProgress = state => getProgressError(state) === null;
 export function getStateError(state) {
   const error = getProgressError(state);
   if (error) return error;
+  if (Object.hasOwn(state, 'name') && (typeof state.name !== 'string' || !state.name.trim())) return 'name is invalid';
   if (!nonnegative(state.sample)) return 'sample is invalid';
   if (!Number.isSafeInteger(state.nextId) || state.nextId < 1) return 'nextId is invalid';
   if (!Array.isArray(state.history)) return 'history is missing';

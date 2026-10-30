@@ -2,7 +2,7 @@ import { getStateError } from '../services/storage.js?v=weekly-history-2';
 import { isBlipColor } from '../config/art.js';
 import { SAMPLES } from '../config/game.js?v=daily-demo-1';
 import { fresh } from './initial-state.js?v=daily-demo-1';
-import { completeTask, uncompleteTask, addTasks, advanceDay } from '../domain/progression.js?v=daily-demo-1';
+import { cleanPetName, completeTask, uncompleteTask, addTasks, advanceDay } from '../domain/progression.js?v=daily-demo-1';
 
 /** Single state owner. Subscribers receive a snapshot after persistence. */
 export function createStore(storage) {
@@ -21,6 +21,12 @@ export function createStore(storage) {
       state.color = color;
       commit([{ type: 'color-chosen', color }]);
       return true;
+    },
+    renamePet(value) {
+      const name = cleanPetName(value);
+      if (name) state.name = name;
+      else delete state.name;
+      commit([{ type: 'pet-renamed' }]);
     },
     subscribe(listener) {
       listeners.add(listener);

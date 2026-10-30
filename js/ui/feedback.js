@@ -4,11 +4,11 @@ import { sprite } from './sprites.js';
 let toastT;
 export function toast(html){const t=$("toast");t.innerHTML=html;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
 
-export function levelUp(from,to,color=null){
+export function levelUp(from,to,color=null,name="Blip"){
   $("evoFrom").innerHTML=sprite(from.form,from.form==="pod"?7:6,{},color);
   $("evoTo").innerHTML=sprite(to.form,to.form==="pod"?8:7,{},color);
   $("lvlTitle").textContent="Level "+to.lv;
-  $("lvlText").textContent=from.form!==to.form?`Blip evolved into ${to.name}!`:`Blip is getting stronger.`;
+  $("lvlText").textContent=from.form!==to.form?`${name} evolved into ${to.name}!`:`${name} is getting stronger.`;
   $("lvlUnlock").textContent="Unlocked: "+to.unlock;
   const c=$("confetti");c.innerHTML="";
   const cols=["var(--blip)","var(--gold)","var(--accent)"];

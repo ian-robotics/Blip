@@ -1,5 +1,18 @@
 import { LEVELS, XP, DEMO_TASKS_BY_DAY } from '../config/game.js?v=daily-demo-1';
 
+export const DEFAULT_PET_NAME = 'Blip';
+export const MAX_PET_NAME_LENGTH = 16;
+
+/** Saves without a name, including older ones, use the default. */
+export function petName(state) {
+  return state.name ?? DEFAULT_PET_NAME;
+}
+
+export function cleanPetName(value) {
+  const clean = String(value).trim().replace(/\s+/g, ' ');
+  return [...clean].slice(0, MAX_PET_NAME_LENGTH).join('').trim();
+}
+
 export function levelOf(xp) {
   return LEVELS.reduce((current, level) => xp >= level.xp ? level : current, LEVELS[0]);
 }

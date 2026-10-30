@@ -1,15 +1,17 @@
 import { XP, BADGES, DAYS } from '../config/game.js?v=daily-demo-1';
-import { levelOf, nextOf, todayIdx } from '../domain/progression.js?v=daily-demo-1';
+import { levelOf, nextOf, petName, todayIdx } from '../domain/progression.js?v=daily-demo-1';
 import { $, esc } from './dom.js';
 import { sprite } from './sprites.js';
 
 export function render(S, { readOnly = false, currentState = S } = {}){
   const L=levelOf(S.xp),N=nextOf(L);
+  // Snapshots do not store the name, so always read it from the live state.
+  const name=petName(currentState);
   $("logoSprite").innerHTML=sprite(L.form,5,{},S.color);
   const pct=N?((S.xp-L.xp)/(N.xp-L.xp))*100:100;
   $("hudPet").innerHTML=sprite(L.form,L.form==="pod"?5:4,{},S.color);
   $("hudLv").textContent="LV "+L.lv;
-  $("hudName").textContent="Blip · "+L.name;
+  $("hudName").textContent=name+" · "+L.name;
   $("hudBar").style.width=pct+"%";
   $("hudXp").textContent=N?`${S.xp} / ${N.xp} XP`:`${S.xp} XP · max level`;
   $("hudStreak").innerHTML=sprite("flame",3,{X:"var(--accent)",o:"var(--gold)"})+" "+S.streak;
@@ -26,9 +28,11 @@ export function render(S, { readOnly = false, currentState = S } = {}){
   // Blip tab
   $("bigPet").innerHTML=sprite(L.form,L.form==="pod"?11:9,{},S.color);
   $("stageLv").textContent="LV "+L.lv;
-  $("stageName").textContent=L.name;
+  $("stageName").textContent=name+" · "+L.name;
+  $("renameBtn").hidden=readOnly;
+  if(readOnly)$("renameForm").hidden=true;
   const doneToday=S.tasks.filter(t=>t.done).length;
-  $("stageMood").textContent=doneToday?`Blip is happy. You finished ${doneToday} task${doneToday>1?"s":""} today.`:"Blip is waiting for you to finish something today.";
+  $("stageMood").textContent=doneToday?`${name} is happy. You finished ${doneToday} task${doneToday>1?"s":""} today.`:`${name} is waiting for you to finish something today.`;
   $("stageBar").style.width=pct+"%";
   $("stageXp").textContent=N?`${N.xp-S.xp} XP until level ${N.lv}`:"Max level reached";
   $("sDone").textContent=S.doneTotal;$("sStreak").textContent=S.streak;$("sXp").textContent=S.xp;

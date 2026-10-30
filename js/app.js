@@ -2,8 +2,9 @@ import { BADGES } from './config/game.js?v=daily-demo-1';
 import { createStorage } from './services/storage.js?v=weekly-history-2';
 import { playSound, isSoundOn, setSoundOn } from './services/sound.js';
 import { createStore } from './state/store.js?v=daily-demo-1';
-import { $ } from './ui/dom.js';
+import { $, esc } from './ui/dom.js';
 import { render } from './ui/render.js?v=week-grid-1';
+import { petName } from './domain/progression.js?v=daily-demo-1';
 import { toast, levelUp } from './ui/feedback.js';
 import { initNavigation, showView } from './ui/navigation.js';
 import { initIntro } from './ui/intro.js';
@@ -24,7 +25,7 @@ function cancelFeedback() {
 }
 
 initNavigation();
-const intro = initIntro(() => store.getState().color);
+const intro = initIntro(() => store.getState().color, () => petName(store.getState()));
 const talk = initTalk(store);
 const colorPicker = initColorPicker(store, () => intro.open());
 const history = initHistory(store, () => {
@@ -90,7 +91,7 @@ store.subscribe((state, events) => {
       }
       case 'level-up':
         later(() => {
-          levelUp(event.from, event.to, state.color);
+          levelUp(event.from, event.to, state.color, petName(state));
           playSound('levelUp');
         }, 650);
         break;
@@ -98,7 +99,7 @@ store.subscribe((state, events) => {
         playSound('newDay');
         showView('today');
         toast(event.did ? `New day. Streak is now ${event.streak} days.`
-          : 'New day. You missed yesterday, so the streak reset. Blip kept its level.');
+          : `New day. You missed yesterday, so the streak reset. ${esc(petName(state))} kept its level.`);
         break;
       case 'reset':
         cancelFeedback();
@@ -127,6 +128,18 @@ $('taskList').addEventListener('click', event => {
     if (row.classList.contains('done')) store.uncompleteTask(id);
     else store.completeTask(id);
   }
+});
+$('renameBtn').onclick = () => {
+  $('renameInput').value = store.getState().name ?? '';
+  $('renameForm').hidden = false;
+  $('renameBtn').hidden = true;
+  $('renameInput').focus();
+};
+$('renameForm').addEventListener('submit', event => {
+  event.preventDefault();
+  $('renameForm').hidden = true;
+  store.renamePet($('renameInput').value);
+  playSound('tap');
 });
 $('lvlOk').onclick = () => { $('lvlUp').hidden = true; };
 $('nextDay').onclick = () => {

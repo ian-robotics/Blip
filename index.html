@@ -62,6 +62,11 @@
             <div class="big"><div class="bob" id="bigPet"></div></div>
             <span class="lv" id="stageLv">LV 1</span>
             <h3 id="stageName">Pod</h3>
+            <button class="btn btn-small" id="renameBtn" type="button">Rename</button>
+            <form class="rename-form" id="renameForm" hidden>
+              <input id="renameInput" type="text" maxlength="16" placeholder="Blip" aria-label="Pet name" autocomplete="off">
+              <button class="btn btn-small" type="submit">Save</button>
+            </form>
             <p class="hint" id="stageMood">Blip is waiting for you to finish something.</p>
             <div class="stage-progress"><div class="bar"><i id="stageBar"></i></div><p class="xptext" id="stageXp"></p></div>
           </div>
@@ -136,6 +141,11 @@
           </p>
 
           <div class="color-options" id="colorOptions"></div>
+
+          <label class="pet-name-field">
+            Name your pet
+            <input id="petNameInput" type="text" maxlength="16" placeholder="Blip" autocomplete="off">
+          </label>
 
           <button
             class="btn primary"

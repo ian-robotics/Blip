@@ -1,7 +1,7 @@
 /* Blip tab */
 .stage{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
 .stage .big{height:130px;display:grid;place-items:center}
-.stage h3{font-size:22px}
+.stage h3{font-size:22px;max-width:100%;overflow-wrap:anywhere}
 .bob{animation:bob 2.4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-6px)}}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
