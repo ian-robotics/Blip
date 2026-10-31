@@ -81,7 +81,9 @@ export function initTalk(store) {
       if (version !== parseVersion || $('talkSheet').hidden) return;
       pending = result.tasks;
       $('talkTitle').textContent = pending.length ? 'Confirm task details' : 'No tasks found';
-      $('modeNote').textContent = 'Groq suggests priority and XP. Tap a priority to change it. To change other details, revise your description and choose Review again.';
+      $('modeNote').textContent = result.source === 'local'
+        ? 'AI could not produce tasks. Local suggestions are shown instead. Check the details and tap a priority to change it. Revise your input and choose Review to retry AI.'
+        : 'Groq suggests priority and XP. Tap a priority to change it. To change other details, revise your description and choose Review again.';
       drawPending();
     } catch (error) {
       if (version !== parseVersion || controller.signal.aborted || $('talkSheet').hidden) return;
@@ -90,6 +92,7 @@ export function initTalk(store) {
       $('addAll').hidden = true;
       $('talkTitle').textContent = 'Could not process tasks';
       const messages = {
+        origin_rejected: 'This website is not allowed by the AI backend. Check ALLOWED_ORIGINS on Render.',
         backend_not_configured: 'The hosted AI backend URL has not been configured.',
         not_configured: 'The AI service is not configured.',
         key_invalid: 'The AI credentials need updating.',

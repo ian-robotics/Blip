@@ -37,8 +37,11 @@ first. Both text and speech transcripts use `/api/parse`. No extra dependencies
 are required. The backend rereads environment settings per request. Real process
 environment variables override `.env`.
 
-Both typed input and speech transcripts must be parsed by Groq. API errors preserve
-input for retry and never create local-parser tasks. Groq suggests a priority
+Both typed input and speech transcripts try Groq first. If AI parsing fails or returns
+no tasks, the local rule-based parser suggests drafts instead. If it cannot split the
+input, the original nonempty text becomes one normal-priority draft. Local suggestions
+are labeled and always require confirmation; users can revise input and retry AI.
+Groq suggests a priority
 and matching reward (low=10, normal=20, high=30 XP); the server validates this contract.
 On the confirmation screen users can tap a priority to change it, and the reward follows.
 They can also remove tasks or revise the source and reparse. Added task cards cannot be edited.

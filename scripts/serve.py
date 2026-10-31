@@ -10,7 +10,12 @@ ROOT = Path(__file__).resolve().parent.parent
 ALLOWED_ORIGINS = set(os.environ.get('ALLOWED_ORIGINS',
     'http://localhost:8000,http://127.0.0.1:8000,https://ian-robotics.github.io'
 ).split(','))
-ALLOWED_ORIGINS = {value.strip() for value in ALLOWED_ORIGINS if value.strip()}
+ALLOWED_ORIGINS = {value.strip().rstrip('/') for value in ALLOWED_ORIGINS if value.strip()}
+# Render's public URL is trusted deployment configuration, not an incoming Host header.
+render_origin = os.environ.get('RENDER_EXTERNAL_URL', 'https://blip-api-x5wd.onrender.com')
+parsed_origin = urlsplit(render_origin)
+if parsed_origin.scheme == 'https' and parsed_origin.netloc:
+    ALLOWED_ORIGINS.add(f'{parsed_origin.scheme}://{parsed_origin.netloc}')
 
 
 class DevelopmentHandler(SimpleHTTPRequestHandler):
