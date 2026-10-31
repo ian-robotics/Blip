@@ -47,7 +47,8 @@ export function initTalk(store) {
       <li>
         <div class="t-body draft-fields">
           <div class="t-title">${esc(task.title)}</div>
-          <div class="chips"><button type="button" class="chip cycle ${task.prio}" data-i="${index}" data-act="prio" aria-label="Priority ${task.prio}. Tap to change.">${task.prio} ▾</button><span class="chip">${task.xp} XP</span></div>
+          <div class="prio-picker" role="group" aria-label="Priority">${PRIORITIES.map(prio => `<button type="button" class="prio-option ${prio}" data-i="${index}" data-act="prio" data-prio="${prio}" aria-pressed="${task.prio === prio}">${prio}</button>`).join('')}</div>
+          <div class="chips"><span class="chip">${task.xp} XP</span></div>
           <p class="hint">Deadline: ${esc(task.time || 'None specified')}</p>
           <p class="hint">${esc(task.reason || 'Priority and XP assigned by AI.')}${task.needsConfirmation ? ' · Check ambiguous details in your description.' : ''}</p>
         </div>
@@ -82,8 +83,8 @@ export function initTalk(store) {
       pending = result.tasks;
       $('talkTitle').textContent = pending.length ? 'Confirm task details' : 'No tasks found';
       $('modeNote').textContent = result.source === 'local'
-        ? 'AI could not produce tasks. Local suggestions are shown instead. Check the details and tap a priority to change it. Revise your input and choose Review to retry AI.'
-        : 'Groq suggests priority and XP. Tap a priority to change it. To change other details, revise your description and choose Review again.';
+        ? 'AI could not produce tasks. Local suggestions are shown instead. Check the details and choose a priority. Revise your input and choose Review to retry AI.'
+        : 'Groq suggests priority and XP. Choose Low, Normal or High to change it. To change other details, revise your description and choose Review again.';
       drawPending();
     } catch (error) {
       if (version !== parseVersion || controller.signal.aborted || $('talkSheet').hidden) return;
@@ -177,13 +178,14 @@ function open() {
     if (!pending[index]) return;
     if (button.dataset.act === 'prio') {
       const task = pending[index];
-      task.prio = PRIORITIES[(PRIORITIES.indexOf(task.prio) + 1) % PRIORITIES.length];
-      task.xp = XP[task.prio];
+      const prio = button.dataset.prio;
+      if (task.prio === prio) return;
+      task.prio = prio;
+      task.xp = XP[prio];
       task.reason = 'Priority set by you.';
-      task.needsConfirmation = false;
       drawPending();
       playSound('tap');
-      $('parsed').querySelector(`button[data-i="${index}"][data-act="prio"]`).focus();
+      $('parsed').querySelector(`button[data-i="${index}"][data-prio="${prio}"]`).focus();
       return;
     }
     if (button.dataset.act !== 'rm') return;

@@ -85,3 +85,8 @@ cursor: not-allowed;
 .login-form{display:flex;flex-direction:column;gap:12px;width:100%}
 .login-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;text-align:left}
 .login-form input{box-sizing:border-box;width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--screen);color:var(--ink);font:inherit}
+.prio-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:3px;border:1px solid var(--line);border-radius:10px}
+.prio-option{padding:8px 4px;border:0;border-radius:7px;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:700;text-transform:capitalize;cursor:pointer}
+.prio-option[aria-pressed="true"].low{background:var(--low);color:var(--phone)}
+.prio-option[aria-pressed="true"].normal{background:var(--blip);color:var(--phone)}
+.prio-option[aria-pressed="true"].high{background:var(--accent);color:var(--accent-ink)}

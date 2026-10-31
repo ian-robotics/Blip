@@ -44,5 +44,5 @@ export async function parseTasks(text, { signal } = {}) {
 export function summarize(tasks) {
   if (!tasks.length) return 'Invalid task or no tasks found. Try another description or voice input.';
   const high = tasks.filter(task => task.prio === 'high').length;
-  return `${tasks.length} task${tasks.length === 1 ? '' : 's'} · ${high} high priority · Tap a priority to change it.`;
+  return `${tasks.length} task${tasks.length === 1 ? '' : 's'} · ${high} high priority · Choose a priority for each task.`;
 }

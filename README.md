@@ -43,7 +43,7 @@ input, the original nonempty text becomes one normal-priority draft. Local sugge
 are labeled and always require confirmation; users can revise input and retry AI.
 Groq suggests a priority
 and matching reward (low=10, normal=20, high=30 XP); the server validates this contract.
-On the confirmation screen users can tap a priority to change it, and the reward follows.
+On the confirmation screen users can choose Low, Normal or High, and the reward follows.
 They can also remove tasks or revise the source and reparse. Added task cards cannot be edited.
 Rewards persist with tasks and historical snapshots. Existing saves without a reward
 field continue to use the priority reward mapping. This is a local prototype: browser
