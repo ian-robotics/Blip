@@ -43,3 +43,106 @@
 .review-header .btn{padding:5px 8px;font-size:11px}
 .review-banner p{margin-top:4px;color:var(--muted)}
 button:disabled{cursor:not-allowed;opacity:.5}
+
+/* Daily energy: layered CSS effects preserve the original pixel artwork. */
+.stage .big{height:190px;width:100%;isolation:isolate}
+.energy-pet{--energy:#62ddff;position:relative;display:grid;place-items:center;width:180px;height:180px}
+.energy-body{position:relative;z-index:2;transition:filter .4s}
+.energy-aura,.energy-ring,.energy-wave{position:absolute;pointer-events:none;border-radius:50%}
+.energy-aura{inset:12px;background:radial-gradient(circle,var(--energy),transparent 68%);opacity:0;transition:opacity .5s;filter:blur(12px)}
+.energy-ring{inset:15px;opacity:0;background:conic-gradient(from 0deg,transparent 10%,var(--energy),transparent 45%,#bb89ff,transparent 80%);padding:2px;mask:linear-gradient(#fff 0 0) content-box exclude,linear-gradient(#fff 0 0);animation:energy-orbit 7s linear infinite}
+.ring-two{inset:0;animation-direction:reverse;animation-duration:11s}
+.fullness-1 .energy-aura{opacity:.22}
+.fullness-1 .energy-body,.fullness-hud.fullness-1{filter:drop-shadow(0 0 4px #62ddff80)}
+.fullness-2 .energy-aura{opacity:.38;animation:energy-breathe 3s ease-in-out infinite}
+.fullness-2 .ring-one{opacity:.65}
+.fullness-2 .energy-body,.fullness-hud.fullness-2{filter:drop-shadow(0 0 7px #62ddffb0)}
+.fullness-3,.fullness-4{--energy:#bc91ff}
+.fullness-3 .energy-aura{opacity:.55;animation:energy-breathe 2.6s ease-in-out infinite}
+.fullness-3 .ring-one,.fullness-4 .energy-ring{opacity:1}
+.fullness-3 .energy-body,.fullness-hud.fullness-3{filter:drop-shadow(0 0 9px #b493ff)}
+.fullness-4{--energy:#ffd875}
+.fullness-4 .energy-aura{opacity:.65;animation:energy-breathe 2s ease-in-out infinite}
+.fullness-4 .energy-body,.fullness-hud.fullness-4{filter:drop-shadow(0 0 9px #ffd875) drop-shadow(0 0 16px #bb89ff90)}
+.energy-particles{position:absolute;inset:0;pointer-events:none;opacity:0}
+.fullness-3 .energy-particles,.fullness-4 .energy-particles{opacity:1}
+.energy-particles i{position:absolute;left:calc(12% + var(--i)*10%);top:var(--y);width:4px;height:4px;background:var(--energy);box-shadow:0 0 8px var(--energy);animation:energy-spark 2.8s ease-in-out infinite;animation-delay:calc(var(--i)*-.37s)}
+.energy-wave{inset:15px;border:2px solid var(--energy);opacity:0}
+.energy-goal .energy-wave{animation:energy-burst .9s ease-out}
+.energy-gain{position:absolute;z-index:3;top:25px;color:var(--energy);font-family:var(--f-pixel);font-size:18px;opacity:0;text-shadow:0 0 12px var(--energy)}
+.energy-fed .energy-gain{animation:energy-gain .85s ease-out}
+.energy-fed .energy-body,.fullness-hud.energy-fed{animation:energy-feed .5s ease-out}
+.fullness-hud{display:block}
+.fullness-panel{width:100%;padding:8px 0 12px}
+.fullness-heading{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin-bottom:8px}
+.fullness-heading strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.fullness-track{height:7px;background:var(--line);border-radius:99px;overflow:hidden}
+#fullnessFill{height:100%;width:0;background:linear-gradient(90deg,#62ddff,#bc91ff,#ffd875);border-radius:inherit;transition:width .4s ease}
+#fullnessNote{margin-top:8px;line-height:1.5}
+@keyframes energy-orbit{to{transform:rotate(360deg)}}
+@keyframes energy-breathe{50%{transform:scale(1.12);opacity:.3}}
+@keyframes energy-spark{0%,100%{transform:translateY(10px) scale(.5);opacity:.15}50%{transform:translateY(-16px) scale(1);opacity:1}}
+@keyframes energy-burst{0%{opacity:.9;transform:scale(.7)}100%{opacity:0;transform:scale(1.65)}}
+@keyframes energy-gain{0%{opacity:0;transform:translateY(8px)}25%{opacity:1}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes energy-feed{50%{transform:translateY(-6px) scale(1.08)}}
+.energy-static *{animation:none!important}
+.energy-static .energy-particles i{opacity:.6}
+@media(prefers-reduced-motion:reduce){.energy-pet *,.fullness-hud.energy-fed{animation:none!important}.energy-body,#fullnessFill{transition:none}.energy-particles i{opacity:.6}}
+
+/* Amplified energy treatment for playtest visibility. */
+.stage .big{height:220px}
+.energy-pet{width:210px;height:210px}
+.energy-aura{inset:-4px;filter:blur(7px);background:radial-gradient(circle,var(--energy) 0%,transparent 72%)}
+.energy-ring{inset:12px;padding:5px;filter:drop-shadow(0 0 6px var(--energy));animation-duration:3s}
+.ring-two{inset:-3px;padding:3px;animation-duration:4.5s}
+.fullness-1 .energy-aura{opacity:.55}
+.fullness-1 .energy-body,.fullness-hud.fullness-1{filter:drop-shadow(0 0 7px #62ddff) drop-shadow(0 0 15px #62ddffaa)}
+.fullness-2 .energy-aura{opacity:.75}
+.fullness-2 .ring-one{opacity:1}
+.fullness-2 .energy-body,.fullness-hud.fullness-2{filter:drop-shadow(0 0 9px #62ddff) drop-shadow(0 0 22px #62ddffcc)}
+.fullness-3 .energy-aura{opacity:.9}
+.fullness-3 .ring-two{opacity:.65}
+.fullness-3 .energy-body,.fullness-hud.fullness-3{filter:drop-shadow(0 0 10px #bc91ff) drop-shadow(0 0 25px #bc91ff)}
+.fullness-4 .energy-aura{opacity:1;background:radial-gradient(circle,#ffd875 0%,#bc91ff88 45%,transparent 72%)}
+.fullness-4 .energy-body,.fullness-hud.fullness-4{filter:drop-shadow(0 0 10px #ffe8a6) drop-shadow(0 0 22px #ffd875) drop-shadow(0 0 32px #bc91ff)}
+.energy-particles i{width:7px;height:7px;box-shadow:0 0 8px #fff,0 0 18px var(--energy);animation-duration:1.8s}
+.fullness-4 .energy-particles i{width:9px;height:9px;background:#fff3bd}
+.energy-wave{border-width:5px;box-shadow:0 0 20px var(--energy),inset 0 0 15px var(--energy)}
+.energy-goal .energy-wave{animation-duration:1.3s}
+.energy-gain{font-size:26px;top:15px}
+@keyframes energy-breathe{50%{transform:scale(1.16);opacity:.55}}
+@keyframes energy-spark{0%,100%{transform:translateY(18px) rotate(0deg) scale(.6);opacity:.3}50%{transform:translateY(-26px) rotate(90deg) scale(1.2);opacity:1}}
+@keyframes energy-feed{50%{transform:translateY(-12px) scale(1.18)}}
+
+/* Daily accessories are CSS shapes, independent of XP evolution artwork. */
+.royal-crown,.royal-throne,.royal-banner,.royal-rays{display:none;pointer-events:none}
+.energy-body{display:grid;place-items:center}
+.fullness-3 .royal-crown,.fullness-4 .royal-crown{display:block}
+.royal-crown{position:absolute;z-index:4;top:-20px;left:50%;width:64px;height:43px;transform:translateX(-50%) rotate(-7deg);filter:drop-shadow(0 3px 0 #9e521a) drop-shadow(0 0 10px #ffd875);background:linear-gradient(120deg,#fff5a3,#ffcc3b 48%,#ffed8b);clip-path:polygon(0 12%,25% 43%,50% 0,75% 43%,100% 12%,87% 100%,13% 100%)}
+.royal-crown i{position:absolute;left:28px;bottom:8px;width:10px;height:13px;background:#ee457f;box-shadow:-17px 3px 0 -2px #64e1ff,17px 3px 0 -2px #64e1ff}
+.fullness-4 .royal-throne{display:block;position:absolute;inset:10px 18px 0;z-index:1;filter:drop-shadow(0 5px 8px #0008)}
+.throne-back{position:absolute;inset:0 14px 35px;border:7px solid #ffce59;border-radius:45% 45% 8px 8px;background:repeating-linear-gradient(90deg,#601e59 0 14px,#7d2868 14px 17px);box-shadow:inset 0 0 0 3px #a85a27,0 0 18px #ffcc5966}
+.throne-back:before{content:'✦';position:absolute;top:5px;left:0;right:0;text-align:center;color:#ffe6a1;font-size:28px}
+.throne-seat{position:absolute;bottom:23px;left:8px;right:8px;height:25px;background:linear-gradient(#d14c87,#872854);border:4px solid #ffce59;border-radius:10px}
+.throne-arm{position:absolute;bottom:38px;width:22px;height:58px;border:4px solid #ffce59;border-radius:12px 12px 4px 4px;background:#a84c75}
+.arm-left{left:0}.arm-right{right:0}
+.throne-base{position:absolute;bottom:10px;left:0;right:0;height:16px;background:linear-gradient(#ffe7a1,#c68829);box-shadow:0 8px 0 -2px #9d5a25;border-radius:4px}
+.fullness-4 .energy-body{transform:translateY(7px)}
+.energy-royal .royal-rays{display:block;position:absolute;inset:-12px;border-radius:50%;opacity:.5;background:repeating-conic-gradient(#ffd87588 0deg 8deg,transparent 8deg 24deg);mask-image:radial-gradient(circle,transparent 25%,#000 45%,transparent 72%);animation:energy-orbit 25s linear infinite}
+.energy-royal .royal-banner{display:block;position:absolute;z-index:0;top:20px;width:37px;height:120px;border-top:5px solid #ffe29b;background:linear-gradient(90deg,#69276e,#ac448e,#69276e);clip-path:polygon(0 0,100% 0,100% 100%,50% 85%,0 100%)}
+.royal-banner:after{content:'✦';position:absolute;top:20px;left:0;right:0;text-align:center;font-size:25px;color:#ffe29b}
+.banner-left{left:0;transform:rotate(5deg)}.banner-right{right:0;transform:rotate(-5deg)}
+.energy-static .royal-rays{animation:none}
+@media(prefers-reduced-motion:reduce){.energy-royal .royal-rays{animation:none}}
+
+/* The HUD uses the same scene, scaled as a whole to keep accessories aligned. */
+#hudPet{position:relative;isolation:isolate}
+#hudPet > .energy-pet{position:absolute;left:50%;top:50%;margin-left:-105px;margin-top:-105px;transform:scale(.36);transform-origin:center}
+#hudPet .energy-body .blip-art{width:120px;height:120px}
+.royal-scepter{display:none;position:absolute;z-index:5;right:-11px;top:30px;width:8px;height:86px;background:linear-gradient(90deg,#aa681b,#fff2a2,#e9ad30);border-radius:3px;transform:rotate(18deg);box-shadow:0 0 8px #ffd87599}
+.fullness-2 .royal-scepter,.fullness-3 .royal-scepter,.fullness-4 .royal-scepter{display:block}
+.royal-scepter:before{content:'';position:absolute;width:25px;height:25px;left:-9px;top:-20px;background:linear-gradient(135deg,#fff4b1,#ffc53e);border:3px solid #fff0a0;transform:rotate(45deg);box-shadow:0 0 15px #ffd875}
+.royal-scepter i{position:absolute;z-index:1;left:-2px;top:-12px;width:12px;height:12px;background:#bf70ff;transform:rotate(45deg);box-shadow:inset 2px 2px #eac4ff}
+.royal-scepter:after{content:'';position:absolute;left:-5px;top:9px;width:18px;height:6px;background:#ffe395;border-radius:3px}
+.feeding-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 8px;font-size:13px}
+.feeding-controls .btn{font-size:12px;max-width:65%}

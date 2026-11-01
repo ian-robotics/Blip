@@ -1,3 +1,4 @@
+import { feedPet } from '../domain/fullness.js';
 import { getStateError } from '../services/storage.js?v=weekly-history-2';
 import { isBlipColor } from '../config/art.js';
 import { SAMPLES } from '../config/game.js?v=daily-demo-1';
@@ -16,6 +17,18 @@ export function createStore(storage) {
   }
   return {
     getState: snapshot,
+    setDebugXp(id, xp) {
+      const task = state.tasks.find(task => task.id === id);
+      if (!task || task.rewardVersion !== 'dev' || task.done ||
+          !Number.isSafeInteger(xp) || xp < 0 || xp > 100000) return false;
+      task.xp = xp;
+      commit();
+      return true;
+    },
+    feedPet() {
+      const events = feedPet(state);
+      if (events.length) commit(events);
+    },
     chooseColor(color) {
       if (!isBlipColor(color)) return false;
       state.color = color;

@@ -1,3 +1,4 @@
+import { isValidTaskReward } from '../domain/rewards.js';
 import { isBlipColor } from '../config/art.js';
 import { STORAGE_KEY, XP, BADGES } from '../config/game.js?v=daily-demo-1';
 import { fresh } from '../state/initial-state.js?v=daily-demo-1';
@@ -6,6 +7,9 @@ const nonnegative = value => Number.isSafeInteger(value) && value >= 0;
 
 export function getProgressError(state) {
   if (!state || typeof state !== 'object') return 'progress is missing';
+  for (const key of ['food', 'fullness']) {
+    if (Object.hasOwn(state, key) && !nonnegative(state[key])) return `${key} is invalid`;
+  }
   if (state.color !== null && !isBlipColor(state.color)) return 'color is invalid';
   for (const key of ['xp', 'streak', 'doneTotal']) {
     if (!nonnegative(state[key])) return `${key} is invalid`;
@@ -19,7 +23,8 @@ export function getProgressError(state) {
   for (const task of state.tasks) {
     if (!task || !Number.isSafeInteger(task.id) || task.id < 1 || ids.has(task.id)) return 'task IDs are invalid';
     ids.add(task.id);
-    if (Object.hasOwn(task, 'xp') && task.xp !== XP[task.prio]) return 'task reward is invalid';
+    if (Object.hasOwn(task, 'foodRewardClaimed') && typeof task.foodRewardClaimed !== 'boolean') return 'food claim is invalid';
+    if (!isValidTaskReward(task)) return 'task reward is invalid';
     if (typeof task.title !== 'string' || typeof task.time !== 'string'
       || !Object.hasOwn(XP, task.prio) || typeof task.done !== 'boolean') return 'task fields are invalid';
   }
@@ -90,7 +95,15 @@ export function createStorage(getStorage = () => window.localStorage) {
             return repaired;
           }
         }
-        return isValidState(state) ? state : fresh();
+        if (!isValidState(state)) return fresh();
+        if (!Object.hasOwn(state, 'food')) {
+          state.food = 0;
+          state.fullness = 0;
+          for (const task of state.tasks) {
+            if (task.done) task.foodRewardClaimed = true;
+          }
+        }
+        return state;
       } catch {
         return fresh();
       }

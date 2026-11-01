@@ -34,6 +34,8 @@ export function initLogin(onEnter) {
     onEnter();
   }
   function open() {
+    $('dayPenalty').hidden = true;
+    $('levelDown').hidden = true;
     writeUser(null);
     $('loginForm').reset();
     panel.hidden = false;

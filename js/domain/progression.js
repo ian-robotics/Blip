@@ -1,4 +1,5 @@
-import { LEVELS, XP, DEMO_TASKS_BY_DAY } from '../config/game.js?v=daily-demo-1';
+import { isValidTaskReward, taskReward } from './rewards.js';
+import { LEVELS, DEMO_TASKS_BY_DAY } from '../config/game.js?v=daily-demo-1';
 
 export const DEFAULT_PET_NAME = 'Blip';
 export const MAX_PET_NAME_LENGTH = 16;
@@ -36,11 +37,17 @@ export function completeTask(state, id) {
   const task = state.tasks.find(task => task.id === id);
   if (!task || task.done) return [];
   const before = levelOf(state.xp);
+  const xp = taskReward(task);
+  const foodEarned = !task.foodRewardClaimed;
+  if (foodEarned) {
+    state.food = (state.food ?? 0) + 1;
+    task.foodRewardClaimed = true;
+  }
   task.done = true;
-  state.xp += task.xp ?? XP[task.prio];
+  state.xp += xp;
   state.doneTotal++;
   state.week[todayIdx(state)] = true;
-  const events = [{ type: 'task-completed', id, xp: task.xp ?? XP[task.prio] }];
+  const events = [{ type: 'task-completed', id, xp, foodEarned }];
   if (state.tasks.every(task => task.done)) award(state, 'sweep', events);
   if (state.doneTotal >= 15) award(state, 'fifteen', events);
   const after = levelOf(state.xp);
@@ -50,26 +57,31 @@ export function completeTask(state, id) {
   return events;
 }
 
-/** Reverse a completion. Earned badges stay; a lost level drops back silently. */
+/** Reverse a completion. Earned badges stay; level transitions are reported for UI feedback. */
 export function uncompleteTask(state, id) {
   const task = state.tasks.find(task => task.id === id);
   if (!task || !task.done) return [];
-  const xp = task.xp ?? XP[task.prio];
+  const from = levelOf(state.xp);
+  const xp = taskReward(task);
   task.done = false;
   state.xp = Math.max(0, state.xp - xp);
   state.doneTotal = Math.max(0, state.doneTotal - 1);
   state.week[todayIdx(state)] = state.tasks.some(task => task.done);
-  return [{ type: 'task-undone', id, xp }];
+  return [{ type: 'task-undone', id, xp, from, to: levelOf(state.xp) }];
 }
 
 export function addTasks(state, drafts) {
-  if (drafts.some(task => Object.hasOwn(task, 'xp') && task.xp !== XP[task.prio])) {
+  if (drafts.some(task => !isValidTaskReward(task))) {
     throw new Error('Invalid task reward');
   }
   const events = [];
   if (drafts.length >= 3) award(state, 'chat', events);
   for (const task of drafts) {
-    state.tasks.push({ title: task.title, time: task.time, prio: task.prio, ...(Object.hasOwn(task, 'xp') ? { xp: task.xp } : {}), id: state.nextId++, done: false });
+    state.tasks.push({ title: task.title, time: task.time, prio: task.prio, ...(Object.hasOwn(task, 'xp') ? { xp: task.xp } : {}),
+      ...(task.rewardVersion === 'dev' ? { rewardVersion: 'dev' } : {}),
+      ...(task.rewardVersion === 2 ? { difficulty: task.difficulty,
+        difficultyReason: task.difficultyReason, urgencyReason: task.urgencyReason,
+        rewardVersion: 2 } : {}), id: state.nextId++, done: false });
   }
   state.tasks.sort((a, b) => a.done - b.done);
   return events;
@@ -77,15 +89,42 @@ export function addTasks(state, drafts) {
 
 export function createDaySnapshot(state) {
   const { day, color, xp, streak, doneTotal, badges, week, tasks } = state;
-  return structuredClone({ day, color, xp, streak, doneTotal, badges, week, tasks });
+  return structuredClone({ day, color, xp, streak, doneTotal, badges, week, tasks,
+    ...(Object.hasOwn(state, 'food') ? { food: state.food } : {}),
+    ...(Object.hasOwn(state, 'fullness') ? { fullness: state.fullness } : {}) });
+}
+
+export function missedDayPenalty(state) {
+  if (state.day >= 7 || state.tasks.some(task => task.done)) {
+    return { missedDays: 0, requested: 0, deducted: 0 };
+  }
+
+  let missedDays = 1;
+
+  for (let i = state.history.length - 1; i >= 0; i--) {
+    if (state.history[i].tasks.some(task => task.done)) break;
+    missedDays++;
+  }
+
+  const requested = missedDays * 10; // 惩罚机制
+
+  return {
+    missedDays,
+    requested,
+    deducted: Math.min(state.xp, requested)
+  };
 }
 
 export function advanceDay(state) {
   if (state.day >= 7) return [];
+  const penalty = missedDayPenalty(state);
+  const previousLevel = levelOf(state.xp);
   state.history.push(createDaySnapshot(state));
+  state.xp -= penalty.deducted;
   const did = state.tasks.some(task => task.done);
   state.streak = did ? state.streak + 1 : 0;
   state.day++;
+  state.fullness = 0;
   state.tasks = state.tasks.filter(task => !task.done);
 
   const demoTasks = DEMO_TASKS_BY_DAY[state.day] ?? [];
@@ -102,10 +141,14 @@ export function advanceDay(state) {
   if (state.streak >= 5) {
     award(state, 'roll', events);
   }
+
   events.push({
     type: 'day-advanced',
     did,
-    streak: state.streak
+    streak: state.streak,
+    penalty,
+    previousLevel,
+    currentLevel: levelOf(state.xp)
   });
   return events;
 }

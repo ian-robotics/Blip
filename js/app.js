@@ -1,26 +1,32 @@
+import { fullnessOf, DAILY_FULLNESS_GOAL } from './domain/fullness.js';
 import { BADGES } from './config/game.js?v=daily-demo-1';
 import { createStorage } from './services/storage.js?v=weekly-history-2';
 import { playSound, isSoundOn, setSoundOn } from './services/sound.js';
 import { createStore } from './state/store.js?v=daily-demo-1';
-import { $, esc } from './ui/dom.js';
+import { $ } from './ui/dom.js';
 import { render } from './ui/render.js?v=week-grid-1';
 import { petName } from './domain/progression.js?v=daily-demo-1';
-import { toast, levelUp } from './ui/feedback.js';
 import { initNavigation, showView } from './ui/navigation.js';
 import { initIntro } from './ui/intro.js';
 import { initTalk } from './ui/talk.js';
 import { initColorPicker } from './ui/color-picker.js';
 import { initHistory } from './ui/history.js?v=week-grid-1';
 import { initLogin } from './ui/login.js';
+import { toast, levelUp, showDayPenalty, showLevelDown } from './ui/feedback.js';
 
 // Composition root: connect domain state to browser UI and bind page actions once.
 const store = createStore(createStorage());
 const timers = new Set();
+const celebratedFullnessDays = new Set();
+if (fullnessOf(store.getState()).count >= DAILY_FULLNESS_GOAL) {
+  celebratedFullnessDays.add(store.getState().day);
+}
 function later(callback, delay) {
   const timer = setTimeout(() => { timers.delete(timer); callback(); }, delay);
   timers.add(timer);
 }
 function cancelFeedback() {
+  $('levelDown').hidden = true;
   timers.forEach(clearTimeout);
   timers.clear();
 }
@@ -34,6 +40,7 @@ const history = initHistory(store, () => {
   cancelFeedback();
   $('lvlUp').hidden = true;
   $('toast').hidden = true;
+  $('dayPenalty').hidden = true;
   refresh(store.getState());
   showView('today');
   $('vToday').scrollTop = 0;
@@ -51,6 +58,8 @@ store.subscribe((state, events) => {
     cancelFeedback();
     talk.close();
     $('lvlUp').hidden = true;
+    $('dayPenalty').hidden = true;
+    $('toast').hidden = true;
   }
   refresh(state);
   for (const event of events) {
@@ -67,6 +76,7 @@ store.subscribe((state, events) => {
       }
       case 'task-completed': {
         playSound('complete');
+        if (event.foodEarned) toast('🍗 +1 drumstick! Visit Blip and tap Feed.');
         const row = $('taskList').querySelector(`[data-id="${event.id}"]`);
         if (row) {
           const label = document.createElement('span');
@@ -76,11 +86,27 @@ store.subscribe((state, events) => {
         }
         break;
       }
+      case 'pet-fed': {
+        const energy = $('bigPet').querySelector('.energy-pet');
+        energy?.classList.add('energy-fed');
+        const hud = $('hudPet').querySelector('.energy-pet');
+        hud?.classList.add('energy-fed');
+        if (fullnessOf(state).count >= DAILY_FULLNESS_GOAL && !celebratedFullnessDays.has(state.day)) {
+          celebratedFullnessDays.add(state.day);
+          energy?.classList.add('energy-goal');
+          hud?.classList.add('energy-goal');
+        }
+        playSound('add');
+        break;
+      }
       case 'task-undone': {
         // Drop any pending level-up or badge popup from the completion being undone.
         cancelFeedback();
         $('lvlUp').hidden = true;
         playSound('remove');
+        if (event.to.lv < event.from.lv) {
+          showLevelDown(event, state.color, petName(state));
+        }
         const row = $('taskList').querySelector(`[data-id="${event.id}"]`);
         if (row) {
           const label = document.createElement('span');
@@ -97,12 +123,18 @@ store.subscribe((state, events) => {
         }, 650);
         break;
       case 'day-advanced':
-        playSound('newDay');
+
         showView('today');
-        toast(event.did ? `New day. Streak is now ${event.streak} days.`
-          : `New day. You missed yesterday, so the streak reset. ${esc(petName(state))} kept its level.`);
+        if (event.penalty.missedDays > 0) {
+          showDayPenalty(event, state.color, petName(state));
+          playSound('penalty'); // 待添加音效
+        } else {
+          playSound('newDay');
+          toast(`New day. Streak is now ${event.streak} days.`);
+        }
         break;
       case 'reset':
+        celebratedFullnessDays.clear();
         cancelFeedback();
         talk.close();
         showView('today');
@@ -121,6 +153,14 @@ $('taskList').addEventListener('click', event => {
   const row = button?.closest('.task');
   if (!row) return;
   const id = Number(row.dataset.id);
+  if (button.dataset.act === 'xp') {
+    const task = store.getState().tasks.find(task => task.id === id);
+    if (task?.done) { toast('Undo completion before changing this debug reward.'); return; }
+    const input = window.prompt('Debug task XP (whole number, 0–100000):', String(task?.xp ?? 20));
+    if (input === null) return;
+    if (!input.trim() || !store.setDebugXp(id, Number(input))) toast('Enter a whole number from 0 to 100000.');
+    return;
+  }
   if (button.dataset.act === 'del') {
     store.deleteTask(id);
     playSound('remove');
@@ -143,8 +183,41 @@ $('renameForm').addEventListener('submit', event => {
   playSound('tap');
 });
 $('lvlOk').onclick = () => { $('lvlUp').hidden = true; };
+$('levelDownOk').onclick = () => {
+  $('levelDown').hidden = true;
+  const row = $('taskList').querySelector('.task:not(.done) .chk');
+  (row || $('reset')).focus();
+};
+$('levelDown').addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    $('levelDownOk').click();
+  } else if (event.key === 'Tab') {
+    event.preventDefault();
+    $('levelDownOk').focus();
+  }
+});
+$('penaltyOk').onclick = () => {
+  $('dayPenalty').hidden = true;
+  // The last day's Skip control is disabled, so focus the live view instead.
+  if (!$('nextDay').disabled) $('nextDay').focus();
+  else $('reset').focus();
+};
+$('dayPenalty').addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    $('penaltyOk').click();
+  } else if (event.key === 'Tab') {
+    event.preventDefault();
+    $('penaltyOk').focus();
+  }
+});
 $('nextDay').onclick = () => {
-  if (!history.isReviewing()) store.advanceDay();
+  if (history.isReviewing() || !$('levelDown').hidden || !$('dayPenalty').hidden || !$('login').hidden) return;
+  store.advanceDay();
+};
+$('feedPet').onclick = () => {
+  if (!history.isReviewing() && $('login').hidden) store.feedPet();
 };
 $('reset').onclick = () => store.reset();
 function drawSoundToggle() {

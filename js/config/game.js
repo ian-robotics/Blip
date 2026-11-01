@@ -6,6 +6,14 @@ export const LEVELS=[
   {lv:5,xp:400,form:"king",name:"Mature Blip",unlock:"Night-sky home screen"}
 ];
 export const XP={high:30,normal:20,low:10};
+
+// 新版让groq根据难度评分
+export const DIFFICULTY_XP = {
+  easy: 10,
+  medium: 20,
+  hard: 30
+}
+
 export const BADGES=[
   {id:"hatch",ico:"2",name:"Hatched",desc:"Reach level 2"},
   {id:"chat",ico:"3+",name:"Chatterbox",desc:"Add 3+ tasks at once"},
@@ -26,7 +34,17 @@ export const STORAGE_KEY = "blip-proto-v1";
 export const DEMO_TASKS_BY_DAY = {
   2: [
     { title: "Review lecture notes", time: "Afternoon", prio: "normal" },
-    { title: "Submit project proposal", time: "Tonight", prio: "high" }
+    { title: "Submit project proposal", time: "Tonight", prio: "high" },
+    { title: "Drink a glass of water", time: "", prio: "low" },
+    { title: "Stretch for one minute", time: "", prio: "low" },
+    { title: "Tidy your desk", time: "", prio: "low" },
+    { title: "Read one page", time: "", prio: "low" },
+    { title: "Reply to a message", time: "", prio: "low" },
+    { title: "Take a short walk", time: "", prio: "low" },
+    { title: "Water a plant", time: "", prio: "low" },
+    { title: "Organize your backpack", time: "", prio: "low" },
+    { title: "Review tomorrow’s plan", time: "", prio: "low" },
+    { title: "Put away five items", time: "", prio: "low" }
   ],
   3: [
     { title: "Buy groceries", time: "After class", prio: "normal" }

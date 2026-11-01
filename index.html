@@ -59,7 +59,14 @@
         <!-- Blip -->
         <section class="view" id="vBlip" aria-label="Blip" hidden>
           <div class="stage">
-            <div class="big"><div class="bob" id="bigPet"></div></div>
+            <div class="big"><div id="bigPet"></div></div>
+            <div class="fullness-panel">
+              <div class="fullness-heading"><span>Daily fullness</span><strong id="fullnessCount">0 / 5</strong></div>
+              <div class="fullness-track"><div id="fullnessFill"></div></div>
+              <p id="fullnessNote" class="hint">Feed Blip to unlock energy effects.</p>
+              <div class="feeding-controls"><span id="foodCount">🍗 0 drumsticks</span><button class="btn primary" id="feedPet" type="button">Feed 🍗</button></div>
+              <p class="hint">One task earns one drumstick. Feeding adds 1 fullness.</p>
+            </div>
             <span class="lv" id="stageLv">LV 1</span>
             <h3 id="stageName">Pod</h3>
             <button class="btn btn-small" id="renameBtn" type="button">Rename</button>
@@ -111,7 +118,7 @@
             </form>
             <p class="hint" id="taskSummary" role="status" hidden></p>
             <div id="parsedWrap" hidden>
-              <p class="hint" id="parsedHint">Groq suggests priority and XP. Tap a priority to change it, remove unwanted tasks, or edit your description and choose Review again.</p>
+              <p class="hint" id="parsedHint">XP is based on difficulty. Changing urgency does not change XP.</p>
               <ul class="parsed" id="parsed"></ul>
             </div>
 
@@ -130,6 +137,33 @@
           <button class="btn primary" id="lvlOk">Nice</button>
         </div>
 
+        <div
+          class="overlay"
+          id="dayPenalty"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="penaltyTitle"
+          aria-describedby="penaltyText"
+          hidden
+        >
+          <div id="penaltyPet"></div>
+          <h2 id="penaltyTitle">Daily check-in</h2>
+          <div class="penalty-xp" id="penaltyXp"></div>
+          <p id="penaltyText"></p>
+          <button class="btn primary" id="penaltyOk" type="button">
+            Continue
+          </button>
+        </div>
+
+        <div class="overlay" id="levelDown" role="dialog" aria-modal="true"
+          aria-labelledby="levelDownTitle" aria-describedby="levelDownText" hidden>
+          <span class="pixel level-eyebrow">LEVEL UPDATED</span>
+          <div class="evolve" aria-hidden="true"><span id="downFrom"></span><span class="arrow">&gt;</span><span id="downTo"></span></div>
+          <h2 id="levelDownTitle">Level updated</h2>
+          <span class="penalty-xp" id="levelDownXp"></span>
+          <p id="levelDownText"></p>
+          <button class="btn primary" id="levelDownOk" type="button">Got it</button>
+        </div>
 
         <!-- Choose color -->
         <div class="overlay color-picker" id="colorPicker" role="dialog"

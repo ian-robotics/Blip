@@ -1,53 +1,87 @@
-# Blip Task Pet
+# Blip · Your tasks, your pixel companion
 
-Blip is a task tracker with a growing pixel pet. Type or speak your tasks, complete them to earn XP, and help Blip evolve while unlocking badges.
+Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to unlock glowing effects, a scepter, a crown, and a throne.
 
-Built with HTML, CSS, and vanilla JavaScript. Progress is saved in your browser.
+**[Play Blip](https://blip-api-x5wd.onrender.com/)** · [GitHub Pages entry](https://ian-robotics.github.io/Blip/)
 
-Try a seven-day demo: skip up to six times, then tap a day in Blip’s “This week” grid to review saved end-of-day progress. Past days are read-only.
+The GitHub Pages entry redirects to the hosted app. This is a seven-day playtest prototype; progress is saved in your current browser, not an online account.
 
-## Try Demo
-https://ian-robotics.github.io/Blip/
+## Start playing
 
+1. Choose **Continue as guest**, or use the mock login. It does not create an account; do not enter a real password.
+2. Choose your Blip’s color and name.
+3. On **Today**, complete a starter task or tap **+** to add your own. Choose text or voice, enter a description, and select **Review**.
+4. Check the suggested tasks, remove unwanted ones, and adjust urgency if needed. Nothing is added until you confirm.
+5. Complete tasks to earn XP and **one drumstick per task’s first completion**. Open **Blip** and tap **Feed 🍗** to increase daily fullness.
 
-## Run locally
+Try a description such as: “Buy milk and eggs at Ralphs, review my lecture notes, and prepare my presentation.” Voice input requires a supported browser and microphone permission; text input is always available.
 
-With Python 3 installed, run this command from the project directory:
+## XP, urgency, and feeding
+
+Groq estimates task difficulty. Rewards are **easy: 10 XP**, **medium: 20 XP**, and **hard: 30 XP**. Urgency is displayed separately; changing it does not change XP. If AI is unavailable or finds no tasks, labeled local suggestions let you continue, using a default 10 XP reward.
+
+XP drives levels and evolution. Feeding is a separate daily activity: each drumstick adds **1 fullness**, with a daily goal of **5** and no upper limit.
+
+| Daily fullness | Blip’s accessories and effects |
+| --- | --- |
+| 1–2 | Blue glow |
+| 3–4 | Scepter and spinning energy ring |
+| 5–7 | Scepter, crown, purple glow and particles |
+| 8–11 | Golden effects and a throne |
+| 12+ | Royal banners and radiating light |
+
+Effects appear on both Today and Blip. Reduced-motion settings keep the decorations while disabling their animations.
+
+You can undo a completed task by clicking its checkmark again. Its XP is returned, and a popup explains any level decrease. Earned badges stay unlocked. Undoing or deleting tasks does not reclaim food or fullness; completing the same task again does not award another drumstick.
+
+## Explore the seven-day demo
+
+- **Skip to tomorrow** settles the current day. Unfinished tasks carry forward, fullness resets, and unused drumsticks stay in your inventory.
+- **Day 2 adds 12 built-in tasks**, so you can complete them and feed Blip to preview every accessory without making AI requests.
+- In **Blip → This week**, select a past day to review its saved tasks and progress. Historical views are read-only; use **Back to today** to resume playing.
+- You can skip six times, ending on Day 7. Tasks and feeding remain available on the final day.
+- **Reset demo** clears your tasks, XP, food, fullness, and history. Use it to start over or see the new Day 2 tasks if your save has already passed that day.
+
+Skipping a day with no completed tasks deducts **10 XP** on the first consecutive missed day, **20** on the second, **30** on the third, and so on. Empty task lists also count. Completing a task breaks that sequence. XP never falls below zero, and a settlement popup explains the deduction. Historical snapshots preserve progress immediately before settlement.
+
+Dates are simulated: the app does not automatically advance at midnight or schedule tasks for future days. Saves belong to the browser and site address you use; changing browsers or clearing site data can remove access to your progress.
+
+## Run on your computer
+
+You need **Python 3.10+**. Node.js is optional for playing.
 
 ```sh
+git clone https://github.com/ian-robotics/Blip.git
+cd Blip
 python3 scripts/serve.py
 ```
 
-Alternatively, run `npm start`. The development server disables caching so updated scripts load after a refresh.
+Open **http://localhost:8000**. Keep the terminal running; press **Ctrl+C** to stop. No package installation is needed. Opening `index.html` directly will not work correctly because the app uses JavaScript modules.
 
-Open **http://localhost:8000** in your browser. Use the local server rather than opening `index.html` directly, since the app uses JavaScript modules.
+If you have Node.js and npm installed, `npm start` runs the same server.
 
-Voice input requires a supported browser and microphone permission. You can always type tasks instead.
+### Optional: enable AI suggestions locally
 
-### Optional Groq task parsing
+Without an API key, local fallback suggestions and the built-in demo tasks still work. To enable Groq, create a `.env` file in the project root:
 
-Fill `GROQ_API_KEY` in the local `.env` file (use `.env.example` as a template).
-Use a new key, not one shared in chat. `.env` is ignored by Git and blocked by
-the development server. Set `GROQ_MODEL` to a model enabled in your Groq account
-that supports JSON mode. Set `GROQ_KEY_EXPIRES_AT` to the actual expiry date from
-the console (YYYY-MM-DD); this is a local check, not provider configuration.
+```dotenv
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=openai/gpt-oss-20b
+```
 
-Run `npm start`, then open http://localhost:8000. Restart an older running server
-first. Both text and speech transcripts use `/api/parse`. No extra dependencies
-are required. The backend rereads environment settings per request. Real process
-environment variables override `.env`.
+Use a model available in your Groq account that supports JSON output. Optionally set `GROQ_KEY_EXPIRES_AT=YYYY-MM-DD` if your key has an expiry date. Keep your key private: `.env` is ignored by Git and blocked by the app’s file server.
 
-Both typed input and speech transcripts try Groq first. If AI parsing fails or returns
-no tasks, the local rule-based parser suggests drafts instead. If it cannot split the
-input, the original nonempty text becomes one normal-priority draft. Local suggestions
-are labeled and always require confirmation; users can revise input and retry AI.
-Groq suggests a priority
-and matching reward (low=10, normal=20, high=30 XP); the server validates this contract.
-On the confirmation screen users can tap a priority to change it, and the reward follows.
-They can also remove tasks or revise the source and reparse. Added task cards cannot be edited.
-Rewards persist with tasks and historical snapshots. Existing saves without a reward
-field continue to use the priority reward mapping. This is a local prototype: browser
-storage is user-controlled and these UI locks are not account-level anti-cheat controls.
+### Troubleshooting
 
-The local server binds to loopback and serves only app assets. It is a development
-server; a public deployment needs a hosted backend with authentication/rate limits.
+- **Hosted app is slow to start:** wait briefly and retry. Use the built-in tasks to explore without AI.
+- **Microphone unavailable:** choose Text input and check browser permissions.
+- **AI suggestions are inaccurate:** revise the description and review again, or remove unwanted drafts before confirming.
+- **Changes are not visible locally:** restart an older server if necessary, then hard-refresh with **Cmd+Shift+R** on macOS or **Ctrl+Shift+R** on Windows/Linux.
+
+## Developer playtest shortcut
+
+Enter exactly **`dev`** in text input and select Review to create a debug draft without calling AI. After adding it, click its **XP ✎** button to set a whole-number reward from **0 to 100000**. Undo completion before editing the reward. This shortcut is available to all playtesters.
+
+For source checks, use Node.js 20+ and run `npm run check`. The local test suite is maintained separately and is not included in this repository; `npm test` requires those test files.
+
+Built with HTML, CSS, vanilla JavaScript, and a Python HTTP server. AI suggestions use a server-side Groq integration.

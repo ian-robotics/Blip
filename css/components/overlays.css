@@ -19,8 +19,10 @@
 .btn.primary{background:var(--accent);color:var(--accent-ink)}
 .btn.block{width:100%;padding:13px}
 .parsed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.parsed li{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:12px}
-.parsed .t-body{font-size:14px}
+.parsed li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:start;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:12px}
+.parsed .t-body{font-size:14px;min-width:0}
+.parsed .hint{overflow-wrap:anywhere}
+.parsed .xpv,.parsed .del{margin-top:2px}
 .hint{font-size:12px;color:var(--muted)}
 .chip.cycle{cursor:pointer}
 
@@ -85,3 +87,39 @@ cursor: not-allowed;
 .login-form{display:flex;flex-direction:column;gap:12px;width:100%}
 .login-form label{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700;text-align:left}
 .login-form input{box-sizing:border-box;width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--screen);color:var(--ink);font:inherit}
+
+#dayPenalty:not([hidden]) #penaltyPet {
+    animation: penalty-sway 0.65s ease-in-out;
+}
+
+#dayPenalty:not([hidden]) .penalty-xp {
+    animation: penalty-drop 0.6s ease-out both;
+}
+
+.penalty-xp {
+    font-family: var(--f-pixel);
+    font-size: 28px;
+    color: var(--gold);
+}
+
+@keyframes penalty-sway {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px) rotate(-3deg); }
+    75% { transform: translateX(6px) rotate(3deg); }
+}
+
+@keyframes penalty-drop {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #dayPenalty:not([hidden]) #penaltyPet,
+    #dayPenalty:not([hidden]) .penalty-xp {
+    animation: none;
+    }
+}
+/* Undo feedback uses a quiet transition rather than the level-up celebration. */
+#levelDown:not([hidden]) #downTo{animation:level-settle .45s ease-out both}
+@keyframes level-settle{from{opacity:.3;transform:translateY(-8px) scale(1.05)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){#levelDown:not([hidden]) #downTo{animation:none}}

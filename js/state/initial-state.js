@@ -1,5 +1,7 @@
 export function fresh(){return{
   color: null,
+  food: 0,
+  fullness: 0,
   history: [],
   week: [false,false,false,false,false,false,false],
   xp:0,streak:0,day:1,doneTotal:0,sample:0,badges:[],
