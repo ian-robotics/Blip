@@ -46,7 +46,8 @@ export function initTalk(store) {
       <li>
         <div class="t-body draft-fields">
           <div class="t-title">${esc(task.title)}</div>
-          <div class="chips"><button type="button" class="chip cycle ${task.prio}" data-i="${index}" data-act="prio" aria-label="Urgency ${task.prio}. Tap to change.">Urgency: ${task.prio} ▾</button><span class="chip">Difficulty: ${esc(task.difficulty || 'debug')}</span><span class="chip">${task.xp} XP</span></div>
+          <div class="prio-picker" role="group" aria-label="Urgency">${PRIORITIES.map(prio => `<button type="button" class="prio-option ${prio}" data-i="${index}" data-act="prio" data-prio="${prio}" aria-pressed="${task.prio === prio}">${prio}</button>`).join('')}</div>
+          <div class="chips"><span class="chip">Difficulty: ${esc(task.difficulty || 'debug')}</span><span class="chip">${task.xp} XP</span></div>
           <p class="hint">Deadline: ${esc(task.time || 'None specified')}</p>
           <p class="hint">Difficulty: ${esc(task.difficultyReason || task.reason || '')}${task.needsConfirmation ? ' · Check ambiguous details in your description.' : ''}</p>
           <p class="hint">Urgency: ${esc(task.urgencyReason || 'Manually configurable debug task.')}</p>
@@ -179,11 +180,13 @@ function open() {
     if (!pending[index]) return;
     if (button.dataset.act === 'prio') {
       const task = pending[index];
-      task.prio = PRIORITIES[(PRIORITIES.indexOf(task.prio) + 1) % PRIORITIES.length];
+      const prio = button.dataset.prio;
+      if (!PRIORITIES.includes(prio) || task.prio === prio) return;
+      task.prio = prio;
       task.urgencyReason = 'Urgency set by you.';
       drawPending();
       playSound('tap');
-      $('parsed').querySelector(`button[data-i="${index}"][data-act="prio"]`).focus();
+      $('parsed').querySelector(`button[data-i="${index}"][data-prio="${prio}"]`).focus();
       return;
     }
     if (button.dataset.act !== 'rm') return;

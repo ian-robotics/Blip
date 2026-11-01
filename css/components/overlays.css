@@ -123,3 +123,9 @@ cursor: not-allowed;
 #levelDown:not([hidden]) #downTo{animation:level-settle .45s ease-out both}
 @keyframes level-settle{from{opacity:.3;transform:translateY(-8px) scale(1.05)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){#levelDown:not([hidden]) #downTo{animation:none}}
+
+.prio-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:3px;border:1px solid var(--line);border-radius:10px}
+.prio-option{padding:8px 4px;border:0;border-radius:7px;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:700;text-transform:capitalize;cursor:pointer}
+.prio-option[aria-pressed="true"].low{background:var(--low);color:var(--phone)}
+.prio-option[aria-pressed="true"].normal{background:var(--blip);color:var(--phone)}
+.prio-option[aria-pressed="true"].high{background:var(--accent);color:var(--accent-ink)}
