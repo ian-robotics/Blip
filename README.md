@@ -45,32 +45,3 @@ You can undo a completed task by clicking its checkmark again. Its XP is returne
 Skipping a day with no completed tasks deducts **10 XP** on the first consecutive missed day, **20** on the second, **30** on the third, and so on. Empty task lists also count. Completing a task breaks that sequence. XP never falls below zero, and a settlement popup explains the deduction. Historical snapshots preserve progress immediately before settlement.
 
 Dates are simulated: the app does not automatically advance at midnight or schedule tasks for future days. Saves belong to the browser and site address you use; changing browsers or clearing site data can remove access to your progress.
-
-## Run on your computer
-
-You need **Python 3.10+**. Node.js is optional for playing.
-
-```sh
-git clone https://github.com/ian-robotics/Blip.git
-cd Blip
-python3 scripts/serve.py
-```
-
-Open **http://localhost:8000**. Keep the terminal running; press **Ctrl+C** to stop. No package installation is needed. Opening `index.html` directly will not work correctly because the app uses JavaScript modules.
-
-If you have Node.js and npm installed, `npm start` runs the same server.
-
-### Troubleshooting
-
-- **Hosted app is slow to start:** wait briefly and retry. Use the built-in tasks to explore without AI.
-- **Microphone unavailable:** choose Text input and check browser permissions.
-- **AI suggestions are inaccurate:** revise the description and review again, or remove unwanted drafts before confirming.
-- **Changes are not visible locally:** restart an older server if necessary, then hard-refresh with **Cmd+Shift+R** on macOS or **Ctrl+Shift+R** on Windows/Linux.
-
-## Developer playtest shortcut
-
-Enter exactly **`dev`** in text input and select Review to create a debug draft without calling AI. After adding it, click its **XP ✎** button to set a whole-number reward from **0 to 100000**. Undo completion before editing the reward. This shortcut is available to all playtesters.
-
-For source checks, use Node.js 20+ and run `npm run check`. The local test suite is maintained separately and is not included in this repository; `npm test` requires those test files.
-
-Built with HTML, CSS, vanilla JavaScript, and a Python HTTP server.
