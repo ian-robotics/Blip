@@ -2,9 +2,9 @@
 
 Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to unlock glowing effects, a scepter, a crown, and a throne.
 
-**[Play Blip](https://blip-api-x5wd.onrender.com/)** · [GitHub Pages entry](https://ian-robotics.github.io/Blip/)
+**[Play Blip on GitHub Pages](https://ian-robotics.github.io/Blip/)**
 
-The GitHub Pages entry redirects to the hosted app. This is a seven-day playtest prototype; progress is saved in your current browser, not an online account.
+This is a seven-day playtest prototype; progress is saved in your current browser, not an online account.
 
 ## Start playing
 
@@ -60,17 +60,6 @@ Open **http://localhost:8000**. Keep the terminal running; press **Ctrl+C** to s
 
 If you have Node.js and npm installed, `npm start` runs the same server.
 
-### Optional: enable AI suggestions locally
-
-Without an API key, local fallback suggestions and the built-in demo tasks still work. To enable Groq, create a `.env` file in the project root:
-
-```dotenv
-GROQ_API_KEY=your_key_here
-GROQ_MODEL=openai/gpt-oss-20b
-```
-
-Use a model available in your Groq account that supports JSON output. Optionally set `GROQ_KEY_EXPIRES_AT=YYYY-MM-DD` if your key has an expiry date. Keep your key private: `.env` is ignored by Git and blocked by the app’s file server.
-
 ### Troubleshooting
 
 - **Hosted app is slow to start:** wait briefly and retry. Use the built-in tasks to explore without AI.
@@ -84,4 +73,4 @@ Enter exactly **`dev`** in text input and select Review to create a debug draft 
 
 For source checks, use Node.js 20+ and run `npm run check`. The local test suite is maintained separately and is not included in this repository; `npm test` requires those test files.
 
-Built with HTML, CSS, vanilla JavaScript, and a Python HTTP server. AI suggestions use a server-side Groq integration.
+Built with HTML, CSS, vanilla JavaScript, and a Python HTTP server.
