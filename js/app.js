@@ -103,9 +103,11 @@ store.subscribe((state, events) => {
         // Drop any pending level-up or badge popup from the completion being undone.
         cancelFeedback();
         $('lvlUp').hidden = true;
-        playSound('remove');
         if (event.to.lv < event.from.lv) {
           showLevelDown(event, state.color, petName(state));
+          playSound('levelDown');
+        } else {
+          playSound('remove');
         }
         const row = $('taskList').querySelector(`[data-id="${event.id}"]`);
         if (row) {
@@ -127,7 +129,7 @@ store.subscribe((state, events) => {
         showView('today');
         if (event.penalty.missedDays > 0) {
           showDayPenalty(event, state.color, petName(state));
-          playSound('penalty'); // 待添加音效
+          playSound('penalty');
         } else {
           playSound('newDay');
           toast(`New day. Streak is now ${event.streak} days.`);
