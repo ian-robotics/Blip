@@ -1,4 +1,6 @@
 /* Sheets and overlays */
+.schedule-field{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
+.schedule-field select{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--screen);color:var(--ink)}
 .sheet{position:absolute;inset:0;background:rgba(10,12,30,.45);display:flex;align-items:flex-end;z-index:5}
 .sheet[hidden]{display:none!important}
 .sheet .panel{width:100%;background:var(--surface);border-radius:26px 26px 0 0;padding:18px;display:flex;flex-direction:column;gap:12px;max-height:88%;overflow-y:auto;animation:rise .25s ease-out}

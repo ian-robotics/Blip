@@ -85,6 +85,13 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
             context = {key: data.get(key, '') for key in ('text', 'now', 'timezone', 'language')}
             if not all(isinstance(value, str) for value in context.values()):
                 raise ValueError()
+            for field in ('currentDay', 'defaultDay'):
+                value = data.get(field, 1)
+                if type(value) is not int or not 1 <= value <= 7:
+                    raise ValueError()
+                context[field] = value
+            if context['defaultDay'] < context['currentDay']:
+                raise ValueError()
         except (ValueError, TypeError):
             return self.respond(400, {'error': 'invalid_input'})
         try:

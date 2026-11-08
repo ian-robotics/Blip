@@ -139,6 +139,16 @@ Set needsConfirmation true only for ambiguous task meaning/deadline, not for loc
 Both reasons must explain the actual decision briefly, not just repeat the title.
 Users may adjust priority before adding tasks, so always give your own honest assessment.
 """
+    prompt += """
+Scheduling: this is a simulated seven-day demo, NOT a real calendar.
+For EVERY task output scheduledDay: an integer from currentDay through 7, or null.
+Day 1 / 第一天 means demo day 1. Today means currentDay, tomorrow currentDay+1,
+day after tomorrow currentDay+2. Use defaultDay only when no date is specified.
+Explicit task dates override defaultDay. Apply shared dates to all tasks they modify.
+If a date is outside the remaining demo days (past days or after Day 7), or a real
+calendar date/weekday cannot be mapped reliably, output null and needsConfirmation true.
+Never clamp an out-of-range day to Day 7. Preserve the deadline phrase in time.
+"""
     body = {
         'model': config.get('GROQ_MODEL') or 'openai/gpt-oss-20b',
         'messages': [{'role': 'system', 'content': prompt},
@@ -183,7 +193,14 @@ Users may adjust priority before adding tasks, so always give your own honest as
             if(not isinstance(difficulty, str) or difficulty not in DIFFICULTY_XP or priority not in ('low', 'normal', 'high')):
                 raise ValueError()
 
+            scheduled_day = task.get('scheduledDay', data.get('defaultDay', data.get('currentDay', 1)))
+            if (type(scheduled_day) is not int or
+                    not data.get('currentDay', 1) <= scheduled_day <= 7):
+                scheduled_day = None
+                uncertain = True
+
             clean.append({
+                'scheduledDay': scheduled_day,
                 'title': title.strip(),
                 'time': time.strip(),
                 'difficulty': difficulty,

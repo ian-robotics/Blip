@@ -1,4 +1,5 @@
 import { parseTasks, summarize } from '../services/task-parser.js';
+import { validDay } from '../domain/schedule.js';
 import { createSpeechService } from '../services/speech.js';
 import { playSound } from '../services/sound.js';
 import { $, esc } from './dom.js';
@@ -39,6 +40,7 @@ export function initTalk(store) {
   function drawPending() {
     $('parsedWrap').hidden = !pending.length;
     $('addAll').hidden = !pending.length;
+    $('addAll').disabled = pending.some(task => !validDay(task.scheduledDay) || task.scheduledDay < store.getState().day);
     $('taskSummary').textContent = summarize(pending);
     $('taskSummary').hidden = false;
     $('addAll').textContent = `Confirm & add ${pending.length} task${pending.length > 1 ? 's' : ''}`;
@@ -46,6 +48,11 @@ export function initTalk(store) {
       <li>
         <div class="t-body draft-fields">
           <div class="t-title">${esc(task.title)}</div>
+          <label>Task day<select data-day-index="${index}">
+            <option value="" ${!validDay(task.scheduledDay) || task.scheduledDay < store.getState().day ? 'selected' : ''}>Choose a remaining Day 1–7</option>
+            ${dayOptions(task.scheduledDay)}
+          </select></label>
+          ${!validDay(task.scheduledDay) || task.scheduledDay < store.getState().day ? '<p class="hint" role="status">This date is outside the remaining demo days. Choose a day before adding.</p>' : ''}
           <div class="prio-picker" role="group" aria-label="Urgency">${PRIORITIES.map(prio => `<button type="button" class="prio-option ${prio}" data-i="${index}" data-act="prio" data-prio="${prio}" aria-pressed="${task.prio === prio}">${prio}</button>`).join('')}</div>
           <div class="chips"><span class="chip">Difficulty: ${esc(task.difficulty || 'debug')}</span><span class="chip">${task.xp} XP</span></div>
           <p class="hint">Deadline: ${esc(task.time || 'None specified')}</p>
@@ -78,7 +85,8 @@ export function initTalk(store) {
     $('talkTitle').textContent = 'Parsing tasks…';
     $('modeNote').textContent = 'Preparing suggestions. You will confirm before anything is saved.';
     try {
-      const result = await parseTasks(text, { signal: controller.signal });
+      const result = await parseTasks(text, { signal: controller.signal,
+        currentDay: store.getState().day, defaultDay: Number($('taskDay').value) });
       if (version !== parseVersion || $('talkSheet').hidden) return;
       pending = result.tasks;
       $('talkTitle').textContent = pending.length ? 'Confirm task details' : 'No tasks found';
@@ -151,6 +159,7 @@ export function initTalk(store) {
 function open() {
   close();
   pending = [];
+  $('taskDay').innerHTML = dayOptions(store.getState().day);
   // 选择输入方式
   $('talkSheet').hidden = false;
   $('inputChoices').hidden = false;
@@ -173,6 +182,23 @@ function open() {
 
   $('voiceMode').focus();
 }
+  function dayOptions(selected) {
+    return Array.from({ length: 8 - store.getState().day }, (_, i) => store.getState().day + i)
+      .map(day => `<option value="${day}" ${day === selected ? 'selected' : ''}>Day ${day}${day === store.getState().day ? ' · Today' : ''}</option>`).join('');
+  }
+  $('parsed').addEventListener('change', event => {
+    const index = event.target.dataset.dayIndex;
+    if (index === undefined || !pending[index]) return;
+    pending[index].scheduledDay = Number(event.target.value) || null;
+    drawPending();
+  });
+  $('taskDay').addEventListener('change', () => {
+    cancelParse();
+    pending = [];
+    $('parsedWrap').hidden = true;
+    $('taskSummary').hidden = true;
+    $('addAll').hidden = true;
+  });
   $('parsed').addEventListener('click', event => {
     const button = event.target.closest('button[data-i]');
     if (!button) return;
@@ -209,8 +235,8 @@ function open() {
     showParsed(text);
   });
   $('addAll').onclick = () => {
-    if (!pending.length || parseRequest) return;
-    store.addTasks(pending.map(task => ({ title: task.title, time: task.time, prio: task.prio, xp: task.xp,
+    if (!pending.length || parseRequest || pending.some(task => !validDay(task.scheduledDay) || task.scheduledDay < store.getState().day)) return;
+    store.addTasks(pending.map(task => ({ title: task.title, time: task.time, prio: task.prio, xp: task.xp, scheduledDay: task.scheduledDay,
       difficulty: task.difficulty, difficultyReason: task.difficultyReason,
       urgencyReason: task.urgencyReason, rewardVersion: task.rewardVersion })));
     playSound('add');

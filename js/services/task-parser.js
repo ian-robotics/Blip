@@ -1,10 +1,11 @@
 import { taskApiUrl } from '../config/api.js';
 import { DIFFICULTY_XP } from '../config/game.js';
 import { parse } from '../domain/parser.js';
+import { inferDay, validDay } from '../domain/schedule.js';
 
 const PRIORITIES = ['low', 'normal', 'high'];
 
-function localResult(text) {
+function localResult(text, currentDay, defaultDay) {
   let tasks = parse(text);
   // Preserve custom names that the rule-based parser cannot interpret.
   if (!tasks.length){
@@ -14,6 +15,7 @@ function localResult(text) {
     source: 'local',
     tasks: tasks.map(task => ({
       ...task,
+      scheduledDay: inferDay(`${task.title} ${task.time}`, currentDay, defaultDay),
       difficulty: 'easy',
       xp: DIFFICULTY_XP.easy,
       rewardVersion: 2,
@@ -25,20 +27,20 @@ function localResult(text) {
   };
 }
 
-export async function parseTasks(text, { signal } = {}) {
+export async function parseTasks(text, { signal, currentDay = 1, defaultDay = currentDay } = {}) {
   text = text.trim();
   if (!text) return { tasks: [], source: 'local' };
   if (signal?.aborted) throw signal.reason;
   if (text === 'dev') return {
     source: 'dev',
-    tasks: [{ title: 'dev', time: '', prio: 'normal', xp: 20,
+    tasks: [{ title: 'dev', time: '', prio: 'normal', xp: 20, scheduledDay: defaultDay,
       rewardVersion: 'dev', reason: 'Debug task. Click its XP after adding to customize it.' }]
   };
   try {
     const response = await fetch(taskApiUrl(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, now: new Date().toISOString(),
+      body: JSON.stringify({ text, currentDay, defaultDay, now: new Date().toISOString(),
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, language: navigator.language }),
       signal: AbortSignal.any([signal || new AbortController().signal, AbortSignal.timeout(90000)])
     });
@@ -60,11 +62,15 @@ export async function parseTasks(text, { signal } = {}) {
       throw new Error('invalid_result');
     }
     return data.tasks.length
-      ? { tasks: data.tasks, source: 'groq' }
-      : localResult(text);
+      ? { tasks: data.tasks.map(task => ({ ...task,
+        scheduledDay: Object.hasOwn(task, 'scheduledDay')
+          ? (validDay(task.scheduledDay) && task.scheduledDay >= currentDay ? task.scheduledDay : null)
+          : inferDay(`${task.title} ${task.time}`, currentDay, defaultDay)
+      })), source: 'groq' }
+      : localResult(text, currentDay, defaultDay);
   } catch (error) {
     if (signal?.aborted) throw error;
-    return localResult(text);
+    return localResult(text, currentDay, defaultDay);
   }
 }
 

@@ -1,4 +1,5 @@
 import { isValidTaskReward, taskReward } from './rewards.js';
+import { validDay, availableToday } from './schedule.js';
 import { LEVELS, DEMO_TASKS_BY_DAY } from '../config/game.js?v=daily-demo-1';
 
 export const DEFAULT_PET_NAME = 'Blip';
@@ -35,7 +36,7 @@ function award(state, id, events) {
 /** Domain operations mutate only the supplied state and return UI-neutral events. */
 export function completeTask(state, id) {
   const task = state.tasks.find(task => task.id === id);
-  if (!task || task.done) return [];
+  if (!task || task.done || !availableToday(task, state.day)) return [];
   const before = levelOf(state.xp);
   const xp = taskReward(task);
   const foodEarned = !task.foodRewardClaimed;
@@ -48,7 +49,7 @@ export function completeTask(state, id) {
   state.doneTotal++;
   state.week[todayIdx(state)] = true;
   const events = [{ type: 'task-completed', id, xp, foodEarned }];
-  if (state.tasks.every(task => task.done)) award(state, 'sweep', events);
+  if (state.tasks.filter(task => availableToday(task, state.day)).every(task => task.done)) award(state, 'sweep', events);
   if (state.doneTotal >= 15) award(state, 'fifteen', events);
   const after = levelOf(state.xp);
   if (after.lv >= 2) award(state, 'hatch', events);
@@ -71,13 +72,17 @@ export function uncompleteTask(state, id) {
 }
 
 export function addTasks(state, drafts) {
+  if (drafts.some(task => Object.hasOwn(task, 'scheduledDay') &&
+    (!validDay(task.scheduledDay) || task.scheduledDay < state.day))) {
+    throw new Error('Tasks must be scheduled within the remaining demo days');
+  }
   if (drafts.some(task => !isValidTaskReward(task))) {
     throw new Error('Invalid task reward');
   }
   const events = [];
   if (drafts.length >= 3) award(state, 'chat', events);
   for (const task of drafts) {
-    state.tasks.push({ title: task.title, time: task.time, prio: task.prio, ...(Object.hasOwn(task, 'xp') ? { xp: task.xp } : {}),
+    state.tasks.push({ title: task.title, time: task.time, prio: task.prio, scheduledDay: task.scheduledDay ?? state.day, ...(Object.hasOwn(task, 'xp') ? { xp: task.xp } : {}),
       ...(task.rewardVersion === 'dev' ? { rewardVersion: 'dev' } : {}),
       ...(task.rewardVersion === 2 ? { difficulty: task.difficulty,
         difficultyReason: task.difficultyReason, urgencyReason: task.urgencyReason,

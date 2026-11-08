@@ -1,3 +1,4 @@
+import { availableToday } from '../domain/schedule.js';
 import { fullnessOf, DAILY_FULLNESS_GOAL } from '../domain/fullness.js';
 import { taskReward } from '../domain/rewards.js';
 import { BADGES, DAYS } from '../config/game.js?v=daily-demo-1';
@@ -22,9 +23,9 @@ export function render(S, { readOnly = false, currentState = S } = {}){
 
   const list=$("taskList");
   if(!S.tasks.length){list.innerHTML=`<li class="empty">${readOnly ? "No tasks saved for this day." : "No tasks yet. Tap the red button and say what you need to do."}</li>`;}
-  else list.innerHTML=S.tasks.map(t=>`<li class="task${t.done?" done":""}" data-id="${t.id}">
-    <button class="chk" data-act="done" ${readOnly ? 'disabled' : ''} aria-label="${t.done ? "Undo" : "Complete"} ${esc(t.title)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 7l3.5 3.5L12 3"/></svg></button>
-    <div class="t-body"><div class="t-title">${esc(t.title)}</div><div class="chips"><span class="chip ${t.prio}">Urgency: ${t.prio}</span>${t.rewardVersion === 2 ? `<span class="chip">Difficulty: ${esc(t.difficulty)}</span>` : ""}${t.time?`<span class="chip">${esc(t.time)}</span>`:""}</div></div>
+  else list.innerHTML=[...S.tasks].sort((a,b) => Number(!availableToday(a,S.day)) - Number(!availableToday(b,S.day)) || (a.scheduledDay ?? S.day) - (b.scheduledDay ?? S.day)).map(t=>`<li class="task${t.done?" done":""}" data-id="${t.id}">
+    <button class="chk" data-act="done" ${readOnly || !availableToday(t,S.day) ? 'disabled' : ''} aria-label="${t.done ? "Undo" : "Complete"} ${esc(t.title)}"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><path d="M2 7l3.5 3.5L12 3"/></svg></button>
+    <div class="t-body"><div class="t-title">${esc(t.title)}</div><div class="chips">${t.scheduledDay ? `<span class="chip">Day ${t.scheduledDay}${!availableToday(t,S.day) ? ' · Upcoming' : t.scheduledDay < S.day ? ' · Carried forward' : ''}</span>` : ''}<span class="chip ${t.prio}">Urgency: ${t.prio}</span>${t.rewardVersion === 2 ? `<span class="chip">Difficulty: ${esc(t.difficulty)}</span>` : ""}${t.time?`<span class="chip">${esc(t.time)}</span>`:""}</div></div>
     ${t.rewardVersion === 'dev'
       ? `<button type="button" class="xpv debug-xp" data-act="xp" ${readOnly ? 'disabled' : ''} aria-label="Edit debug task XP">+${taskReward(t)} ✎</button>`
       : `<span class="xpv">+${taskReward(t)}</span>`}

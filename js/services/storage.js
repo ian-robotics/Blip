@@ -1,4 +1,5 @@
 import { isValidTaskReward } from '../domain/rewards.js';
+import { validDay } from '../domain/schedule.js';
 import { isBlipColor } from '../config/art.js';
 import { STORAGE_KEY, XP, BADGES } from '../config/game.js?v=daily-demo-1';
 import { fresh } from '../state/initial-state.js?v=daily-demo-1';
@@ -21,6 +22,7 @@ export function getProgressError(state) {
   if (!Array.isArray(state.tasks)) return 'tasks are missing';
   const ids = new Set();
   for (const task of state.tasks) {
+    if (Object.hasOwn(task, 'scheduledDay') && !validDay(task.scheduledDay)) return 'task day is outside 1–7';
     if (!task || !Number.isSafeInteger(task.id) || task.id < 1 || ids.has(task.id)) return 'task IDs are invalid';
     ids.add(task.id);
     if (Object.hasOwn(task, 'foodRewardClaimed') && typeof task.foodRewardClaimed !== 'boolean') return 'food claim is invalid';
