@@ -1,0 +1,127 @@
+/*
+ * Blip UI Decorations
+ *
+ * File location:
+ * css/components/ui-decorations.css
+ *
+ * Required images:
+ * assets/ui/corner-stars.png — 24 × 24 px, transparent PNG
+ * assets/ui/mushroom.png     — 24 × 24 px, transparent PNG
+ *
+ * Import this file LAST in css/style.css:
+ * Import path: ./components/ui-decorations.css
+ */
+
+
+/*1. Dotted screen background*/
+
+#screen {
+  background-color: var(--screen);
+
+  background-image: radial-gradient(
+    circle,
+    rgba(91, 182, 235, 0.35) 2px,
+    transparent 2.5px
+  );
+
+  background-size: 28px 28px;
+  background-repeat: repeat;
+}
+
+
+/* 2. XP bar gradient */
+
+#hudBar,
+#stageBar {
+  background: linear-gradient(
+    90deg,
+    #4169ed 0%,
+    #49baff 65%,
+    #8cecf0 100%
+  );
+}
+
+
+/*3. Main pet card and statistics borders*/
+
+#vBlip .stage,
+#vBlip .stat {
+  position: relative;
+  border-color: #9996ff;
+}
+
+
+/* 4. Corner star stickers
+   Canvas: 24 × 24 px*/
+
+/* Reserve space above the statistics numbers. */
+#vBlip .stat {
+  padding-top: 34px;
+}
+
+#vBlip .stage::before,
+#vBlip .stat::before {
+  content: "";
+  position: absolute;
+
+  top: 6px;
+  left: 6px;
+
+  width: 24px;
+  height: 24px;
+
+  background-image: url("../../assets/ui/corner-stars.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+
+/*
+   5. Weekly mushroom stickers
+   Canvas: 24 × 24 px
+   Display: 24 × 24 CSS px*/
+
+#week .week-square {
+  position: relative;
+}
+
+#week .week-square::after {
+  content: "";
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 24px;
+  height: 24px;
+
+  /* Allow the sticker to fit narrower squares. */
+  max-width: 80%;
+  max-height: 80%;
+
+  background-image: url("../../assets/ui/mushroom.png");
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  image-rendering: pixelated;
+  pointer-events: none;
+
+  /* Incomplete day: dim mushroom. */
+  opacity: 0.22;
+  filter: grayscale(1);
+}
+
+
+/* Completed day: full-color mushroom.
+   Uses the app's existing .on state. */
+
+#week .week-square.on::after {
+  opacity: 1;
+  filter: none;
+}

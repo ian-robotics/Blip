@@ -7,3 +7,5 @@
 @import url("./legacy-dossier.css");
 @import url("./accessibility.css");
 @import url("./utilities.css");
+@import url("./components/ui-decorations.css");
+@import url("./mobile.css");
