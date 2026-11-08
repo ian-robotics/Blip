@@ -129,7 +129,7 @@ store.subscribe((state, events) => {
         showView('today');
         if (event.penalty.missedDays > 0) {
           showDayPenalty(event, state.color, petName(state));
-          playSound('penalty');
+          playSound(event.currentLevel.lv < event.previousLevel.lv ? 'levelDown' : 'penalty');
         } else {
           playSound('newDay');
           toast(`New day. Streak is now ${event.streak} days.`);
