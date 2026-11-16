@@ -1,4 +1,4 @@
-import { fetchInspirations, localInspirations, titleKey, isNotice, canAddInspiration } from '../services/inspiration.js';
+import { fetchInspirations, localInspirations, titleKey, isNotice, canAddInspiration, historicalCandidates } from '../services/inspiration.js';
 import { $ } from './dom.js';
 
 /** Each new simulated day owns its requests, timers and three notification slots. */
@@ -14,7 +14,8 @@ export function initInspiration(store, { canShow, onOpen, notify,
   let pending = 0;
   let polling = false;
   let lastShown = 0;
-  const cacheKey = 'blip-inspiration-days-v1';
+  let requestSettled = true;
+  const cacheKey = 'blip-inspiration-days-v2';
   let days = {};
   try { days = JSON.parse(globalThis.localStorage?.getItem(cacheKey) || '{}'); } catch {}
   if (!days || typeof days !== 'object' || Array.isArray(days)) days = {};
@@ -44,6 +45,14 @@ export function initInspiration(store, { canShow, onOpen, notify,
     if (!record || record.count >= 3) return;
     if (state.day !== day || !canShow()) { $('inspirationNotice').hidden = true; return; }
     const candidates = [...suggestions, ...localInspirations(state)];
+    const historical = historicalCandidates(state);
+    if (state.day >= 3 && record.count === 0 && historical.length) {
+      const exact = suggestions.find(task => canAddInspiration(task) && historical.some(item=>item.title===task.title) && eligible(task,state));
+      if (!exact && !requestSettled) return false;
+      const fallback = historical[0];
+      candidates.splice(0,candidates.length,exact ?? {...fallback,kind:'pattern',source:'local',
+        message:`You previously had “${fallback.title}”. Would you like to do it again today?`});
+    }
     const hasTodayTasks = state.tasks.some(task => !task.done && (task.scheduledDay ?? state.day) <= state.day);
     if (!hasTodayTasks) candidates.sort((a,b) => Number(canAddInspiration(b)) - Number(canAddInspiration(a)));
     active = candidates.find(task =>
@@ -58,6 +67,7 @@ export function initInspiration(store, { canShow, onOpen, notify,
     $('inspirationAction').textContent = 'Tap to add task';
     $('inspirationAccept').hidden = !canAddInspiration(active);
     $('inspirationNotice').hidden = false;
+    return true;
   }
   function start(state) {
     stop();
@@ -68,7 +78,9 @@ export function initInspiration(store, { canShow, onOpen, notify,
     suggestions = Array.isArray(record.suggestions) ? record.suggestions : [];
     if (record.count >= 3) return;
     controller = new AbortController();
+    requestSettled = true;
     if (!record.requested) {
+      requestSettled = false;
       record.requested = true;
       save();
       request(state, controller.signal).then(items => {
@@ -77,7 +89,8 @@ export function initInspiration(store, { canShow, onOpen, notify,
           record.suggestions = items;
           save();
         }
-      }).catch(() => { /* No retry this day; use local suggestions. */ });
+      }).catch(() => { /* No retry this day; use dismiss-only historical prompts. */ })
+        .finally(() => { if (token === generation) requestSettled = true; });
     }
     function pump() {
       polling = false;
@@ -87,8 +100,12 @@ export function initInspiration(store, { canShow, onOpen, notify,
         timers.push(schedule(pump,1000));
         return;
       }
+      if (show() === false) {
+        polling = true;
+        timers.push(schedule(pump,1000));
+        return;
+      }
       pending--;
-      show();
       lastShown = Date.now();
       if (pending) {
         polling = true;

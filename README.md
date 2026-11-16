@@ -47,3 +47,5 @@ You can undo a completed task by clicking its checkmark again. Its XP is returne
 Skipping a day with no completed tasks deducts **10 XP** on the first consecutive missed day, **20** on the second, **30** on the third, and so on. Empty task lists also count. Completing a task breaks that sequence. XP never falls below zero, and a settlement popup explains the deduction. Historical snapshots preserve progress immediately before settlement.
 
 Dates are simulated: the app does not automatically advance at midnight or schedule tasks for future days. Saves belong to the browser and site address you use; changing browsers or clearing site data can remove access to your progress.
+
+From Day 3, the first notification repeats an exact historical task title, using both completed and incomplete tasks. Repeated and recent titles take priority; tasks already in the active list are excluded. Groq selects from historical candidates; if it fails to select an exact title, a labeled local historical prompt is dismiss-only.
