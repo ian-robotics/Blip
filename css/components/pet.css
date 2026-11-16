@@ -1,6 +1,11 @@
 /* Blip tab */
 .stage{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
 .stage .big{height:130px;display:grid;place-items:center}
+.blip-speech-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;margin:8px 0 4px}
+.blip-speech{position:relative;width:100%;min-height:64px;padding:14px 16px;border:1px solid #9996ff;border-radius:18px;background:var(--blip-soft);color:var(--ink);font:inherit;font-size:14px;line-height:1.5;text-align:center;overflow-wrap:anywhere}
+.blip-speech::before{content:"";position:absolute;top:-7px;left:calc(50% - 6px);width:12px;height:12px;background:var(--blip-soft);border-top:1px solid #9996ff;border-left:1px solid #9996ff;transform:rotate(45deg)}
+.blip-speech:hover{border-color:var(--blip)}
+.blip-speech-wrap>.hint{font-size:11px}
 .stage h3{font-size:22px;max-width:100%;overflow-wrap:anywhere}
 .bob{animation:bob 2.4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-6px)}}

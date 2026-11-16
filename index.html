@@ -60,6 +60,12 @@
         <section class="view" id="vBlip" aria-label="Blip" hidden>
           <div class="stage">
             <div class="big"><div id="bigPet"></div></div>
+            <div class="blip-speech-wrap">
+              <button class="blip-speech" id="blipSpeech" type="button" aria-label="Blip says hello. Tap for another message.">
+                <span id="blipWords" aria-live="polite" aria-atomic="true"></span>
+              </button>
+              <span class="hint" id="blipSpeechProgress"></span>
+            </div>
             <div class="fullness-panel">
               <div class="fullness-heading"><span>Daily fullness</span><strong id="fullnessCount">0 / 5</strong></div>
               <div class="fullness-track"><div id="fullnessFill"></div></div>

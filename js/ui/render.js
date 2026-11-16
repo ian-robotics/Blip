@@ -5,6 +5,9 @@ import { BADGES, DAYS, DEMO_DAYS } from '../config/game.js?v=daily-demo-1';
 import { levelOf, nextOf, petName, todayIdx } from '../domain/progression.js?v=daily-demo-1';
 import { $, esc } from './dom.js';
 import { sprite } from './sprites.js';
+import { createBlipSpeech } from './blip-speech.js';
+
+const chooseSpeech = createBlipSpeech();
 
 export function render(S, { readOnly = false, currentState = S } = {}){
   const L=levelOf(S.xp),N=nextOf(L);
@@ -46,6 +49,14 @@ export function render(S, { readOnly = false, currentState = S } = {}){
   $("renameBtn").hidden=readOnly;
   if(readOnly)$("renameForm").hidden=true;
   const doneToday=S.tasks.filter(t=>t.done).length;
+  function drawSpeech(reroll = false) {
+    const speech = chooseSpeech(S.day, doneToday, { reroll, readOnly });
+    $('blipWords').textContent = speech.text;
+    $('blipSpeech').setAttribute('aria-label', `${name}: ${speech.text} Tap for another message.`);
+    $('blipSpeechProgress').textContent = `${readOnly ? 'Saved ' : ''}Day ${S.day} · ${doneToday} task${doneToday === 1 ? '' : 's'} done · ${speech.mood}`;
+  }
+  drawSpeech();
+  $('blipSpeech').onclick = () => drawSpeech(true);
   $("stageMood").textContent=doneToday?`${name} is happy. You finished ${doneToday} task${doneToday>1?"s":""} today.`:`${name} is waiting for you to finish something today.`;
   $("stageBar").style.width=pct+"%";
   $("stageXp").textContent=N?`${N.xp-S.xp} XP until level ${N.lv}`:"Max level reached";
