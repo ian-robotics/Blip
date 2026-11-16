@@ -1,7 +1,7 @@
 import { fetchInspirations, localInspirations, titleKey, isNotice, canAddInspiration } from '../services/inspiration.js';
 import { $ } from './dom.js';
 
-/** Each new simulated day owns its requests, timers and two notification slots. */
+/** Each new simulated day owns its requests, timers and three notification slots. */
 export function initInspiration(store, { canShow, onOpen, notify,
   request = fetchInspirations, schedule = setTimeout, cancel = clearTimeout } = {}) {
   let generation = 0;
@@ -43,7 +43,10 @@ export function initInspiration(store, { canShow, onOpen, notify,
     const record = days[day];
     if (!record || record.count >= 3) return;
     if (state.day !== day || !canShow()) { $('inspirationNotice').hidden = true; return; }
-    active = [...suggestions, ...localInspirations(state)].find(task =>
+    const candidates = [...suggestions, ...localInspirations(state)];
+    const hasTodayTasks = state.tasks.some(task => !task.done && (task.scheduledDay ?? state.day) <= state.day);
+    if (!hasTodayTasks) candidates.sort((a,b) => Number(canAddInspiration(b)) - Number(canAddInspiration(a)));
+    active = candidates.find(task =>
       !shown.has(titleKey(task.title)) && eligible(task,state));
     if (!active) { $('inspirationNotice').hidden = true; return; }
     shown.add(titleKey(active.title));
@@ -93,7 +96,7 @@ export function initInspiration(store, { canShow, onOpen, notify,
       }
     }
     const due = () => { pending++; if (!polling) pump(); };
-    timers = [schedule(due,7000), schedule(due,14000)];
+    timers = [schedule(due,7000), schedule(due,14000), schedule(due,21000)];
   }
   $('inspirationDismiss').onclick = () => { active = null; $('inspirationNotice').hidden = true; };
   $('inspirationAccept').onclick = () => {

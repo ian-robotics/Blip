@@ -43,7 +43,7 @@ export async function fetchInspirations(state, signal) {
   });
   if (!response.ok) throw new Error('inspiration_unavailable');
   const result = await response.json();
-  if (!Array.isArray(result.tasks) || result.tasks.length > 2 || result.tasks.some(task =>
+  if (!Array.isArray(result.tasks) || result.tasks.length > 3 || result.tasks.some(task =>
     !task || typeof task.title !== 'string' || !task.title.trim() || task.title.length > 300 ||
     typeof task.time !== 'string' || task.time.length > 200 ||
     !isValidTaskReward(task) || task.rewardVersion !== 2 ||

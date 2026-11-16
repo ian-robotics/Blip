@@ -97,7 +97,7 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
                             or type(task.get('day')) is not int or not 1 <= task['day'] <= 14
                             or type(task.get('done')) is not bool):
                         raise ValueError()
-                data = {'text': 'Suggest up to two useful tasks for this simulated day.',
+                data = {'text': 'Suggest up to three useful tasks for this simulated day.',
                         'currentDay': day, 'defaultDay': day,
                         'inspiration': {'recent': recent, 'tasks': current}}
             if not isinstance(data, dict) or not isinstance(data.get('text'), str) or not 1 <= len(data['text'].strip()) <= 4000:
