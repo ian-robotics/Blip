@@ -1,4 +1,4 @@
-import { fetchInspirations, localInspirations, titleKey, isNotice } from '../services/inspiration.js';
+import { fetchInspirations, localInspirations, titleKey, isNotice, canAddInspiration } from '../services/inspiration.js';
 import { $ } from './dom.js';
 
 /** Each new simulated day owns its requests, timers and two notification slots. */
@@ -52,8 +52,8 @@ export function initInspiration(store, { canShow, onOpen, notify,
     save();
     $('inspirationType').textContent = `${active.source === 'groq' ? 'Groq' : 'Blip'} · ${active.kind === 'pattern' ? 'Your routine' : active.kind === 'reminder' ? 'Today’s reminder' : 'Task inspiration'}`;
     $('inspirationMessage').textContent = active.message;
-    $('inspirationAction').textContent = active.kind === 'reminder' ? 'View task' : 'Tap to add task';
-    $('inspirationAccept').hidden = isNotice(active);
+    $('inspirationAction').textContent = 'Tap to add task';
+    $('inspirationAccept').hidden = !canAddInspiration(active);
     $('inspirationNotice').hidden = false;
   }
   function start(state) {
@@ -98,7 +98,7 @@ export function initInspiration(store, { canShow, onOpen, notify,
   $('inspirationDismiss').onclick = () => { active = null; $('inspirationNotice').hidden = true; };
   $('inspirationAccept').onclick = () => {
     const task = active;
-    if (task && isNotice(task)) return;
+    if (!canAddInspiration(task)) return;
     const state = store.getState();
     if (!task || state.day !== day || !canShow() || !eligible(task,state)) {
       $('inspirationNotice').hidden = true;
@@ -106,10 +106,8 @@ export function initInspiration(store, { canShow, onOpen, notify,
     }
     active = null;
     $('inspirationNotice').hidden = true;
-    if (task.kind !== 'reminder') {
-      store.addTasks([{...task, scheduledDay:state.day}]);
-      notify('Suggested task added.');
-    }
+    store.addTasks([{...task, scheduledDay:state.day}]);
+    notify('Suggested task added.');
     onOpen();
     const row = [...$('taskList').querySelectorAll('.task')].find(row =>
       row.querySelector('.t-title')?.textContent === task.title);

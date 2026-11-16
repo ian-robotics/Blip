@@ -3,6 +3,7 @@ import { isValidTaskReward } from '../domain/rewards.js';
 
 export const titleKey = title => title.trim().toLocaleLowerCase().replace(/[\s\p{P}]+/gu, '');
 export const isNotice = task => task.kind === 'notice' || /\bplan(?:ning)?\b.*\b(?:tomorrow|tmr|today|task|next step)\b|\b(?:review|organize)\b.*\b(?:tomorrow|tmr|tasks?)\b|规划.*(?:明天|任务)|安排.*明天|计划.*(?:明天|任务)/i.test(task.title);
+export const canAddInspiration = task => task?.source === 'groq' && task.kind === 'inspiration' && !isNotice(task);
 
 export function localInspirations(state) {
   const suggestions = [];
