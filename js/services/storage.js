@@ -1,3 +1,4 @@
+import { DEMO_DAYS } from '../config/game.js';
 import { isValidTaskReward } from '../domain/rewards.js';
 import { validDay } from '../domain/schedule.js';
 import { isBlipColor } from '../config/art.js';
@@ -15,14 +16,14 @@ export function getProgressError(state) {
   for (const key of ['xp', 'streak', 'doneTotal']) {
     if (!nonnegative(state[key])) return `${key} is invalid`;
   }
-  if (!Number.isSafeInteger(state.day) || state.day < 1 || state.day > 7) return 'day is outside 1–7';
-  if (!Array.isArray(state.week) || state.week.length !== 7 || !state.week.every(day => typeof day === 'boolean')) return 'week is invalid';
+  if (!Number.isSafeInteger(state.day) || state.day < 1 || state.day > DEMO_DAYS) return 'day is outside 1–14';
+  if (!Array.isArray(state.week) || state.week.length !== DEMO_DAYS || !state.week.every(day => typeof day === 'boolean')) return 'week is invalid';
   if (!Array.isArray(state.badges) || !state.badges.every(id => BADGES.some(badge => badge.id === id))) return 'badges are invalid';
   if (new Set(state.badges).size !== state.badges.length) return 'badges contain duplicates';
   if (!Array.isArray(state.tasks)) return 'tasks are missing';
   const ids = new Set();
   for (const task of state.tasks) {
-    if (Object.hasOwn(task, 'scheduledDay') && !validDay(task.scheduledDay)) return 'task day is outside 1–7';
+    if (Object.hasOwn(task, 'scheduledDay') && !validDay(task.scheduledDay)) return 'task day is outside 1–14';
     if (!task || !Number.isSafeInteger(task.id) || task.id < 1 || ids.has(task.id)) return 'task IDs are invalid';
     ids.add(task.id);
     if (Object.hasOwn(task, 'foodRewardClaimed') && typeof task.foodRewardClaimed !== 'boolean') return 'food claim is invalid';
@@ -66,17 +67,23 @@ export function createStorage(getStorage = () => window.localStorage) {
       try {
         const raw = getStorage().getItem(STORAGE_KEY);
         const state = JSON.parse(raw);
+        // Expand existing seven-day saves and snapshots without losing progress.
+        for (const progress of [state, ...(Array.isArray(state?.history) ? state.history : [])]) {
+          if (Array.isArray(progress?.week) && progress.week.length === 7) {
+            progress.week.push(...Array(DEMO_DAYS - 7).fill(false));
+          }
+        }
         // Migrate pre-color v1 saves without resetting XP, tasks, or badges.
         if (state && typeof state === 'object' && !Object.hasOwn(state, 'color')) {
           state.color = null;
         }
         // Old demos had an arbitrary day counter but no snapshots. Start a new
-        // seven-day timeline while retaining tasks, XP, color and earned badges.
+        // fourteen-day timeline while retaining tasks, XP, color and earned badges.
         if (state && typeof state === 'object' && !Object.hasOwn(state, 'history')) {
           state.day = 1;
           state.history = [];
           if (Array.isArray(state.tasks)) {
-            state.week = [state.tasks.some(task => task?.done), false, false, false, false, false, false];
+            state.week = [state.tasks.some(task => task?.done), ...Array(DEMO_DAYS - 1).fill(false)];
           }
         }
         // A previously loaded old rollover script could advance the date while
@@ -85,7 +92,7 @@ export function createStorage(getStorage = () => window.localStorage) {
           && Array.isArray(state.history) && state.history.length === 0) {
           const repaired = {
             ...state, day: 1,
-            week: [state.tasks.some(task => task.done), false, false, false, false, false, false]
+            week: [state.tasks.some(task => task.done), ...Array(DEMO_DAYS - 1).fill(false)]
           };
           if (isValidState(repaired)) {
             try {

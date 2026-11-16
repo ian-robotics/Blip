@@ -1,9 +1,10 @@
+import { DEMO_DAYS } from '../config/game.js';
 export function fresh(){return{
   color: null,
   food: 0,
   fullness: 0,
   history: [],
-  week: [false,false,false,false,false,false,false],
+  week: Array(DEMO_DAYS).fill(false),
   xp:0,streak:0,day:1,doneTotal:0,sample:0,badges:[],
   
   tasks:[

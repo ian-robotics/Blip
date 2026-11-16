@@ -1,3 +1,4 @@
+export const DEMO_DAYS = 14;
 export const LEVELS=[
   {lv:1,xp:0,form:"pod",name:"Pod",unlock:"Blip arrives as a pod"},
   {lv:2,xp:60,form:"baby",name:"Hatchling",unlock:"Blip hatches"},

@@ -4,7 +4,7 @@ Turn everyday tasks into progress for a growing pixel pet. Complete tasks to ear
 
 **[Play Blip on GitHub Pages](https://ian-robotics.github.io/Blip/)**
 
-This is a seven-day playtest prototype; progress is saved in your current browser, not an online account.
+This is a fourteen-day playtest prototype; progress is saved in your current browser, not an online account.
 
 ## Start playing
 
@@ -34,12 +34,13 @@ Effects appear on both Today and Blip. Reduced-motion settings keep the decorati
 
 You can undo a completed task by clicking its checkmark again. Its XP is returned, and a popup explains any level decrease. Earned badges stay unlocked. Undoing or deleting tasks does not reclaim food or fullness; completing the same task again does not award another drumstick.
 
-## Explore the seven-day demo
+## Explore the fourteen-day demo
 
 - **Skip to tomorrow** settles the current day. Unfinished tasks carry forward, fullness resets, and unused drumsticks stay in your inventory.
 - **Day 2 adds 12 built-in tasks**, so you can complete them and feed Blip to preview every accessory without making AI requests.
-- In **Blip → This week**, select a past day to review its saved tasks and progress. Historical views are read-only; use **Back to today** to resume playing.
-- You can skip six times, ending on Day 7. Tasks and feeding remain available on the final day.
+- In **Blip → 14-day journey**, select a past day to review its saved tasks and progress. Historical views are read-only; use **Back to today** to resume playing.
+- You can skip thirteen times, ending on Day 14. Tasks and feeding remain available on the final day.
+- Schedule tasks through Day 14; Days 8–14 add no built-in tasks. Existing unfinished tasks still carry forward.
 - **Reset demo** clears your tasks, XP, food, fullness, and history. Use it to start over or see the new Day 2 tasks if your save has already passed that day.
 
 Skipping a day with no completed tasks deducts **10 XP** on the first consecutive missed day, **20** on the second, **30** on the third, and so on. Empty task lists also count. Completing a task breaks that sequence. XP never falls below zero, and a settlement popup explains the deduction. Historical snapshots preserve progress immediately before settlement.

@@ -1,3 +1,4 @@
+import { DEMO_DAYS } from '../config/game.js';
 import { isValidTaskReward, taskReward } from './rewards.js';
 import { validDay, availableToday } from './schedule.js';
 import { LEVELS, DEMO_TASKS_BY_DAY } from '../config/game.js?v=daily-demo-1';
@@ -24,7 +25,7 @@ export function nextOf(level) {
 }
 
 export function todayIdx(state) {
-  return (state.day - 1) % 7;
+  return state.day - 1;
 }
 
 function award(state, id, events) {
@@ -100,7 +101,7 @@ export function createDaySnapshot(state) {
 }
 
 export function missedDayPenalty(state) {
-  if (state.day >= 7 || state.tasks.some(task => task.done)) {
+  if (state.day >= DEMO_DAYS || state.tasks.some(task => task.done)) {
     return { missedDays: 0, requested: 0, deducted: 0 };
   }
 
@@ -121,7 +122,7 @@ export function missedDayPenalty(state) {
 }
 
 export function advanceDay(state) {
-  if (state.day >= 7) return [];
+  if (state.day >= DEMO_DAYS) return [];
   const penalty = missedDayPenalty(state);
   const previousLevel = levelOf(state.xp);
   state.history.push(createDaySnapshot(state));

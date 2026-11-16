@@ -140,14 +140,14 @@ Both reasons must explain the actual decision briefly, not just repeat the title
 Users may adjust priority before adding tasks, so always give your own honest assessment.
 """
     prompt += """
-Scheduling: this is a simulated seven-day demo, NOT a real calendar.
-For EVERY task output scheduledDay: an integer from currentDay through 7, or null.
+Scheduling: this is a simulated fourteen-day demo, NOT a real calendar.
+For EVERY task output scheduledDay: an integer from currentDay through 14, or null.
 Day 1 / 第一天 means demo day 1. Today means currentDay, tomorrow currentDay+1,
 day after tomorrow currentDay+2. Use defaultDay only when no date is specified.
 Explicit task dates override defaultDay. Apply shared dates to all tasks they modify.
-If a date is outside the remaining demo days (past days or after Day 7), or a real
+If a date is outside the remaining demo days (past days or after Day 14), or a real
 calendar date/weekday cannot be mapped reliably, output null and needsConfirmation true.
-Never clamp an out-of-range day to Day 7. Preserve the deadline phrase in time.
+Never clamp an out-of-range day to Day 14. Preserve the deadline phrase in time.
 """
     body = {
         'model': config.get('GROQ_MODEL') or 'openai/gpt-oss-20b',
@@ -195,7 +195,7 @@ Never clamp an out-of-range day to Day 7. Preserve the deadline phrase in time.
 
             scheduled_day = task.get('scheduledDay', data.get('defaultDay', data.get('currentDay', 1)))
             if (type(scheduled_day) is not int or
-                    not data.get('currentDay', 1) <= scheduled_day <= 7):
+                    not data.get('currentDay', 1) <= scheduled_day <= 14):
                 scheduled_day = None
                 uncertain = True
 

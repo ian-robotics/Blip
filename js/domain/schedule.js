@@ -1,4 +1,5 @@
-export const validDay = day => Number.isInteger(day) && day >= 1 && day <= 7;
+import { DEMO_DAYS } from '../config/game.js';
+export const validDay = day => Number.isInteger(day) && day >= 1 && day <= DEMO_DAYS;
 export const availableToday = (task, day) => (task.scheduledDay ?? 1) <= day;
 
 /** Local fallback understands explicit demo days and relative days, never clamps. */
@@ -7,7 +8,9 @@ export function inferDay(text, currentDay, defaultDay = currentDay) {
   if (explicit) {
     const value = explicit[1] || explicit[2];
     const chinese = '一二三四五六七八九十';
-    const day = /^\d+$/.test(value) ? Number(value) : chinese.indexOf(value) + 1;
+    const day = /^\d+$/.test(value) ? Number(value)
+      : value === '十' ? 10 : value.startsWith('十') ? 10 + chinese.indexOf(value.slice(1)) + 1
+      : chinese.indexOf(value) + 1;
     return validDay(day) ? day : null;
   }
   if (/后天|day after tomorrow/i.test(text)) return validDay(currentDay + 2) ? currentDay + 2 : null;

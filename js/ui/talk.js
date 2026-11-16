@@ -1,3 +1,4 @@
+import { DEMO_DAYS } from '../config/game.js';
 import { parseTasks, summarize } from '../services/task-parser.js';
 import { validDay } from '../domain/schedule.js';
 import { createSpeechService } from '../services/speech.js';
@@ -49,7 +50,7 @@ export function initTalk(store) {
         <div class="t-body draft-fields">
           <div class="t-title">${esc(task.title)}</div>
           <label>Task day<select data-day-index="${index}">
-            <option value="" ${!validDay(task.scheduledDay) || task.scheduledDay < store.getState().day ? 'selected' : ''}>Choose a remaining Day 1–7</option>
+            <option value="" ${!validDay(task.scheduledDay) || task.scheduledDay < store.getState().day ? 'selected' : ''}>Choose a remaining Day 1–14</option>
             ${dayOptions(task.scheduledDay)}
           </select></label>
           ${!validDay(task.scheduledDay) || task.scheduledDay < store.getState().day ? '<p class="hint" role="status">This date is outside the remaining demo days. Choose a day before adding.</p>' : ''}
@@ -183,7 +184,7 @@ function open() {
   $('voiceMode').focus();
 }
   function dayOptions(selected) {
-    return Array.from({ length: 8 - store.getState().day }, (_, i) => store.getState().day + i)
+    return Array.from({ length: DEMO_DAYS + 1 - store.getState().day }, (_, i) => store.getState().day + i)
       .map(day => `<option value="${day}" ${day === selected ? 'selected' : ''}>Day ${day}${day === store.getState().day ? ' · Today' : ''}</option>`).join('');
   }
   $('parsed').addEventListener('change', event => {

@@ -1,3 +1,4 @@
+import { DEMO_DAYS } from '../config/game.js';
 import { feedPet } from '../domain/fullness.js';
 import { getStateError } from '../services/storage.js?v=weekly-history-2';
 import { isBlipColor } from '../config/art.js';
@@ -53,7 +54,7 @@ export function createStore(storage) {
     },
     addTasks(drafts) { commit(addTasks(state, drafts)); },
     advanceDay() {
-      if (state.day >= 7) return;
+      if (state.day >= DEMO_DAYS) return;
       // Roll over a draft: never commit a new day without its complete snapshot.
       const draft = snapshot();
       const events = advanceDay(draft);

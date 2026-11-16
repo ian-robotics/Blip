@@ -87,7 +87,7 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
                 raise ValueError()
             for field in ('currentDay', 'defaultDay'):
                 value = data.get(field, 1)
-                if type(value) is not int or not 1 <= value <= 7:
+                if type(value) is not int or not 1 <= value <= 14:
                     raise ValueError()
                 context[field] = value
             if context['defaultDay'] < context['currentDay']:

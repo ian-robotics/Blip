@@ -1,3 +1,4 @@
+import { DEMO_DAYS } from '../config/game.js';
 import { $ } from './dom.js';
 import { isValidProgress } from '../services/storage.js?v=weekly-history-2';
 
@@ -46,8 +47,8 @@ export function initHistory(store, onSelect) {
         || `Read-only · ${done}/${displayed.tasks.length} tasks completed · ${displayed.xp} XP`;
       $('taskHeading').textContent = reviewing ? `Day ${selectedDay} tasks` : 'Today';
       $('taskHint').hidden = reviewing;
-      $('nextDay').disabled = reviewing || state.day >= 7;
-      $('nextDay').textContent = state.day >= 7 ? 'Final day reached' : 'Skip to tomorrow';
+      $('nextDay').disabled = reviewing || state.day >= DEMO_DAYS;
+      $('nextDay').textContent = state.day >= DEMO_DAYS ? 'Final day reached' : 'Skip to tomorrow';
       $('micBtn').disabled = reviewing;
       return { displayed, reviewing };
     }

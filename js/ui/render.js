@@ -1,7 +1,7 @@
 import { availableToday } from '../domain/schedule.js';
 import { fullnessOf, DAILY_FULLNESS_GOAL } from '../domain/fullness.js';
 import { taskReward } from '../domain/rewards.js';
-import { BADGES, DAYS } from '../config/game.js?v=daily-demo-1';
+import { BADGES, DAYS, DEMO_DAYS } from '../config/game.js?v=daily-demo-1';
 import { levelOf, nextOf, petName, todayIdx } from '../domain/progression.js?v=daily-demo-1';
 import { $, esc } from './dom.js';
 import { sprite } from './sprites.js';
@@ -19,7 +19,7 @@ export function render(S, { readOnly = false, currentState = S } = {}){
   $("hudBar").style.width=pct+"%";
   $("hudXp").textContent=N?`${S.xp} / ${N.xp} XP`:`${S.xp} XP · max level`;
   $("hudStreak").innerHTML=sprite("flame",3,{X:"var(--accent)",o:"var(--gold)"})+" "+S.streak;
-  $("dayLabel").textContent="Day "+S.day+" · "+DAYS[todayIdx(S)];
+  $("dayLabel").textContent="Day "+S.day+" · "+DAYS[todayIdx(S) % DAYS.length];
 
   const list=$("taskList");
   if(!S.tasks.length){list.innerHTML=`<li class="empty">${readOnly ? "No tasks saved for this day." : "No tasks yet. Tap the red button and say what you need to do."}</li>`;}
@@ -51,14 +51,15 @@ export function render(S, { readOnly = false, currentState = S } = {}){
   $("stageXp").textContent=N?`${N.xp-S.xp} XP until level ${N.lv}`:"Max level reached";
   $("sDone").textContent=S.doneTotal;$("sStreak").textContent=S.streak;$("sXp").textContent=S.xp;
   // Keep the whole unlocked week navigable while displaying an older snapshot.
-  $("week").innerHTML=DAYS.map((label,index)=>{
+  $("week").innerHTML=Array.from({length: DEMO_DAYS}, (_,index)=>{
+    const label = DAYS[index % DAYS.length];
     const day=index+1;
     const current=day===currentState.day;
     const available=current || currentState.history?.some(snapshot=>snapshot.day===day);
     const description=current ? "current progress" : available ? "saved snapshot" : "not available";
     return `<button type="button" class="week-day" data-day="${day}"
       ${available ? "" : "disabled"} aria-label="Day ${day}, ${label}, ${description}"
-      aria-pressed="${day===S.day}"><span class="week-square ${currentState.week[index]?"on":""} ${current?"today":""}" aria-hidden="true"></span>${label}</button>`;
+      aria-pressed="${day===S.day}"><span class="week-square ${currentState.week[index]?"on":""} ${current?"today":""}" aria-hidden="true"></span>Day ${day}<span>${label}</span></button>`;
   }).join("");
   $("badges").innerHTML=BADGES.map(b=>`<div class="badge${S.badges.includes(b.id)?" got":""}"><span class="ico">${b.ico}</span><span><b>${b.name}</b><small>${b.desc}</small></span></div>`).join("");
   $("badgeCount").textContent=`${S.badges.length} of ${BADGES.length}`;
