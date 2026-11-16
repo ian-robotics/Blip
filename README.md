@@ -36,11 +36,11 @@ You can undo a completed task by clicking its checkmark again. Its XP is returne
 
 ## Explore the fourteen-day demo
 
-- **Skip to tomorrow** settles the current day. Unfinished tasks carry forward, fullness resets, and unused drumsticks stay in your inventory.
+- **Skip to tomorrow** settles the current day. Tasks whose deadline has passed leave the active list; future tasks remain, fullness resets, and unused drumsticks stay in your inventory.
 - **Day 2 adds 12 built-in tasks**, so you can complete them and feed Blip to preview every accessory without making AI requests.
 - In **Blip → 14-day journey**, select a past day to review its saved tasks and progress. Historical views are read-only; use **Back to today** to resume playing.
 - You can skip thirteen times, ending on Day 14. Tasks and feeding remain available on the final day.
-- Schedule tasks through Day 14; Days 8–14 add no built-in tasks. Existing unfinished tasks still carry forward.
+- Schedule tasks through Day 14; Days 8–14 add no built-in tasks. Built-in tasks expire at the end of their assigned day; previous tasks remain available in read-only history.
 - **Reset demo** clears your tasks, XP, food, fullness, and history. Use it to start over or see the new Day 2 tasks if your save has already passed that day.
 
 Skipping a day with no completed tasks deducts **10 XP** on the first consecutive missed day, **20** on the second, **30** on the third, and so on. Empty task lists also count. Completing a task breaks that sequence. XP never falls below zero, and a settlement popup explains the deduction. Historical snapshots preserve progress immediately before settlement.

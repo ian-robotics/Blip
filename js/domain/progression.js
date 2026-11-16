@@ -131,13 +131,14 @@ export function advanceDay(state) {
   state.streak = did ? state.streak + 1 : 0;
   state.day++;
   state.fullness = 0;
-  state.tasks = state.tasks.filter(task => !task.done);
+  state.tasks = state.tasks.filter(task => !task.done && (task.scheduledDay ?? state.day - 1) >= state.day);
 
   const demoTasks = DEMO_TASKS_BY_DAY[state.day] ?? [];
 
   for (const task of demoTasks) {
     state.tasks.push({
       ...task,
+      scheduledDay: state.day,
       id: state.nextId++,
       done: false
     });

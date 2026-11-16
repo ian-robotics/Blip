@@ -105,6 +105,13 @@ export function createStorage(getStorage = () => window.localStorage) {
           }
         }
         if (!isValidState(state)) return fresh();
+        // Older saves carried tasks indefinitely. Recover their original day
+        // from history, while leaving archived snapshots unchanged.
+        for (const task of state.tasks) {
+          task.scheduledDay ??= state.history.find(snapshot =>
+            snapshot.tasks.some(saved => saved.id === task.id))?.day ?? state.day;
+        }
+        state.tasks = state.tasks.filter(task => task.done || task.scheduledDay >= state.day);
         if (!Object.hasOwn(state, 'food')) {
           state.food = 0;
           state.fullness = 0;

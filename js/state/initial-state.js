@@ -11,4 +11,4 @@ export function fresh(){return{
     {id:1,title:"Finish 151 playtest report",time:"Tonight",prio:"high",done:false},
     {id:2,title:"Buy groceries",time:"After class",prio:"normal",done:false},
     {id:3,title:"Reply to group chat",time:"",prio:"low",done:false}
-  ],nextId:4};}
+  ].map(task => ({...task, scheduledDay: 1})),nextId:4};}
