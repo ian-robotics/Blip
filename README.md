@@ -37,7 +37,7 @@ You can undo a completed task by clicking its checkmark again. Its XP is returne
 ## Explore the fourteen-day demo
 
 - **Skip to tomorrow** settles the current day. Tasks whose deadline has passed leave the active list; future tasks remain, fullness resets, and unused drumsticks stay in your inventory.
-- After skipping, Blip shows task notifications at 5 and 10 seconds, deferring them while dialogs are open. Groq uses current task titles and recent task history to suggest routines, next steps, or reminders; labeled local suggestions cover slow or unavailable AI. Tap a suggestion to add it, or an existing-task reminder to view that task. Skipping again cancels the previous day's notifications.
+- After skipping, Blip shows task notifications at 7 and 14 seconds, deferring them while dialogs are open. Each simulated day permits at most three notifications and one Groq request, cached across reloads. Groq uses current task titles and recent task history to suggest routines, next steps, or reminders; labeled local suggestions cover slow or unavailable AI. Tap a concrete suggestion to add it, or an existing-task reminder to view that task. General planning notices only offer dismissal. Skipping again cancels the previous day's notifications.
 - **Day 2 adds 12 built-in tasks**, so you can complete them and feed Blip to preview every accessory without making AI requests.
 - In **Blip → 14-day journey**, select a past day to review its saved tasks and progress. Historical views are read-only; use **Back to today** to resume playing.
 - You can skip thirteen times, ending on Day 14. Tasks and feeding remain available on the final day.

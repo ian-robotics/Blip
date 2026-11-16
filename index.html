@@ -33,12 +33,12 @@
       <div class="phone"><div class="screen" id="screen">
         <div class="status"><span id="clock">9:41</span><span id="dayLabel">Day 5</span></div>
         <aside class="inspiration-notice" id="inspirationNotice" aria-label="Task suggestion" hidden>
-          <button class="inspiration-accept" id="inspirationAccept" type="button">
+          <div class="inspiration-accept">
             <span class="inspiration-heading"><span class="inspiration-icon" aria-hidden="true">✦</span><strong>BLIP</strong><span>now</span></span>
             <span class="inspiration-type" id="inspirationType"></span>
             <span id="inspirationMessage" role="status" aria-live="polite"></span>
-            <span class="inspiration-action" id="inspirationAction"></span>
-          </button>
+            <button class="inspiration-action" id="inspirationAccept" type="button"><span id="inspirationAction"></span></button>
+          </div>
           <button class="inspiration-dismiss" id="inspirationDismiss" type="button" aria-label="Dismiss task suggestion">×</button>
         </aside>
 

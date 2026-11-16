@@ -1,4 +1,4 @@
-import { fetchInspirations, localInspirations, titleKey } from '../services/inspiration.js';
+import { fetchInspirations, localInspirations, titleKey, isNotice } from '../services/inspiration.js';
 import { $ } from './dom.js';
 
 /** Each new simulated day owns its requests, timers and two notification slots. */
@@ -14,6 +14,11 @@ export function initInspiration(store, { canShow, onOpen, notify,
   let pending = 0;
   let polling = false;
   let lastShown = 0;
+  const cacheKey = 'blip-inspiration-days-v1';
+  let days = {};
+  try { days = JSON.parse(globalThis.localStorage?.getItem(cacheKey) || '{}'); } catch {}
+  if (!days || typeof days !== 'object' || Array.isArray(days)) days = {};
+  const save = () => { try { globalThis.localStorage?.setItem(cacheKey, JSON.stringify(days)); } catch {} };
 
   function stop() {
     generation++;
@@ -27,6 +32,7 @@ export function initInspiration(store, { canShow, onOpen, notify,
     $('inspirationNotice').hidden = true;
   }
   function eligible(task, state) {
+    if (isNotice(task)) return true;
     const existing = state.tasks.find(item => titleKey(item.title) === titleKey(task.title));
     return task.kind === 'reminder'
       ? existing && !existing.done && (existing.scheduledDay ?? state.day) === state.day
@@ -34,30 +40,46 @@ export function initInspiration(store, { canShow, onOpen, notify,
   }
   function show() {
     const state = store.getState();
+    const record = days[day];
+    if (!record || record.count >= 3) return;
     if (state.day !== day || !canShow()) { $('inspirationNotice').hidden = true; return; }
     active = [...suggestions, ...localInspirations(state)].find(task =>
       !shown.has(titleKey(task.title)) && eligible(task,state));
     if (!active) { $('inspirationNotice').hidden = true; return; }
     shown.add(titleKey(active.title));
+    record.count++;
+    record.shown = [...shown];
+    save();
     $('inspirationType').textContent = `${active.source === 'groq' ? 'Groq' : 'Blip'} · ${active.kind === 'pattern' ? 'Your routine' : active.kind === 'reminder' ? 'Today’s reminder' : 'Task inspiration'}`;
     $('inspirationMessage').textContent = active.message;
     $('inspirationAction').textContent = active.kind === 'reminder' ? 'View task' : 'Tap to add task';
+    $('inspirationAccept').hidden = isNotice(active);
     $('inspirationNotice').hidden = false;
   }
   function start(state) {
     stop();
     const token = generation;
     day = state.day;
-    shown = new Set();
-    suggestions = [];
+    const record = days[day] ??= {count:0, requested:false, suggestions:[], shown:[]};
+    shown = new Set(record.shown || []);
+    suggestions = Array.isArray(record.suggestions) ? record.suggestions : [];
+    if (record.count >= 3) return;
     controller = new AbortController();
-    request(state, controller.signal).then(items => {
-      if (token === generation) suggestions = items;
-    }).catch(() => { /* Timed local suggestions remain available. */ });
+    if (!record.requested) {
+      record.requested = true;
+      save();
+      request(state, controller.signal).then(items => {
+        if (token === generation) {
+          suggestions = items;
+          record.suggestions = items;
+          save();
+        }
+      }).catch(() => { /* No retry this day; use local suggestions. */ });
+    }
     function pump() {
       polling = false;
       if (token !== generation || !pending) return;
-      if (!canShow() || Date.now() - lastShown < 5000) {
+      if (!canShow() || Date.now() - lastShown < 7000) {
         polling = true;
         timers.push(schedule(pump,1000));
         return;
@@ -67,15 +89,16 @@ export function initInspiration(store, { canShow, onOpen, notify,
       lastShown = Date.now();
       if (pending) {
         polling = true;
-        timers.push(schedule(pump,5000));
+        timers.push(schedule(pump,7000));
       }
     }
     const due = () => { pending++; if (!polling) pump(); };
-    timers = [schedule(due,5000), schedule(due,10000)];
+    timers = [schedule(due,7000), schedule(due,14000)];
   }
   $('inspirationDismiss').onclick = () => { active = null; $('inspirationNotice').hidden = true; };
   $('inspirationAccept').onclick = () => {
     const task = active;
+    if (task && isNotice(task)) return;
     const state = store.getState();
     if (!task || state.day !== day || !canShow() || !eligible(task,state)) {
       $('inspirationNotice').hidden = true;
@@ -93,7 +116,7 @@ export function initInspiration(store, { canShow, onOpen, notify,
     row?.scrollIntoView({block:'nearest', behavior:'smooth'});
   };
   store.subscribe((state, events) => {
-    if (events.some(event => event.type === 'reset')) stop();
+    if (events.some(event => event.type === 'reset')) { stop(); days = {}; save(); }
     else if (events.some(event => event.type === 'day-advanced')) start(state);
     else if (active && !eligible(active,state)) {
       active = null;
