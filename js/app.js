@@ -12,6 +12,7 @@ import { initTalk } from './ui/talk.js';
 import { initColorPicker } from './ui/color-picker.js';
 import { initHistory } from './ui/history.js?v=week-grid-1';
 import { initLogin } from './ui/login.js';
+import { initInspiration } from './ui/inspiration.js';
 import { toast, levelUp, showDayPenalty, showLevelDown } from './ui/feedback.js';
 
 // Composition root: connect domain state to browser UI and bind page actions once.
@@ -235,6 +236,13 @@ drawSoundToggle();
 const now = new Date();
 $('clock').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 refresh(store.getState());
+
+initInspiration(store, {
+  canShow: () => !history.isReviewing() && document.visibilityState !== 'hidden' &&
+    ['login','intro','colorPicker','lvlUp','levelDown','dayPenalty','talkSheet'].every(id => $(id).hidden),
+  onOpen: () => showView('today'),
+  notify: toast
+});
 
 initLogin(() => {
   if (store.getState().color === null) colorPicker.open();

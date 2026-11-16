@@ -58,7 +58,7 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_OPTIONS(self):
-        if self.path != '/api/parse':
+        if self.path not in ('/api/parse', '/api/inspiration'):
             return self.respond(404, {'error': 'not_found'})
         if self.headers.get('Origin') not in ALLOWED_ORIGINS:
             return self.respond(403, {'error': 'origin_rejected'})
@@ -70,7 +70,7 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        if self.path != '/api/parse':
+        if self.path not in ('/api/parse', '/api/inspiration'):
             return self.respond(404, {'error': 'not_found'})
         origin = self.headers.get('Origin')
         if origin and origin not in ALLOWED_ORIGINS:
@@ -80,6 +80,26 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
             if not 0 < length <= 20000:
                 return self.respond(413, {'error': 'input_too_large'})
             data = json.loads(self.rfile.read(length))
+            inspiration = self.path == '/api/inspiration'
+            if inspiration:
+                if not isinstance(data, dict):
+                    raise ValueError()
+                day = data.get('currentDay')
+                recent = data.get('recent', [])
+                current = data.get('tasks', [])
+                if (type(day) is not int or not 1 <= day <= 14
+                        or not isinstance(recent, list) or len(recent) > 40
+                        or not isinstance(current, list) or len(current) > 40):
+                    raise ValueError()
+                for task in [*recent, *current]:
+                    if (not isinstance(task, dict) or not isinstance(task.get('title'), str)
+                            or not 1 <= len(task['title']) <= 300
+                            or type(task.get('day')) is not int or not 1 <= task['day'] <= 14
+                            or type(task.get('done')) is not bool):
+                        raise ValueError()
+                data = {'text': 'Suggest up to two useful tasks for this simulated day.',
+                        'currentDay': day, 'defaultDay': day,
+                        'inspiration': {'recent': recent, 'tasks': current}}
             if not isinstance(data, dict) or not isinstance(data.get('text'), str) or not 1 <= len(data['text'].strip()) <= 4000:
                 raise ValueError()
             context = {key: data.get(key, '') for key in ('text', 'now', 'timezone', 'language')}
@@ -92,6 +112,8 @@ class DevelopmentHandler(SimpleHTTPRequestHandler):
                 context[field] = value
             if context['defaultDay'] < context['currentDay']:
                 raise ValueError()
+            if inspiration:
+                context['inspiration'] = data['inspiration']
         except (ValueError, TypeError):
             return self.respond(400, {'error': 'invalid_input'})
         try:

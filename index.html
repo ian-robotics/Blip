@@ -32,6 +32,15 @@
     <div class="phone-col">
       <div class="phone"><div class="screen" id="screen">
         <div class="status"><span id="clock">9:41</span><span id="dayLabel">Day 5</span></div>
+        <aside class="inspiration-notice" id="inspirationNotice" aria-label="Task suggestion" hidden>
+          <button class="inspiration-accept" id="inspirationAccept" type="button">
+            <span class="inspiration-heading"><span class="inspiration-icon" aria-hidden="true">✦</span><strong>BLIP</strong><span>now</span></span>
+            <span class="inspiration-type" id="inspirationType"></span>
+            <span id="inspirationMessage" role="status" aria-live="polite"></span>
+            <span class="inspiration-action" id="inspirationAction"></span>
+          </button>
+          <button class="inspiration-dismiss" id="inspirationDismiss" type="button" aria-label="Dismiss task suggestion">×</button>
+        </aside>
 
         <section class="review-banner" id="reviewBanner" aria-label="Saved day" hidden>
           <div class="review-header">

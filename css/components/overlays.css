@@ -1,4 +1,14 @@
 /* Sheets and overlays */
+.inspiration-notice{position:absolute;top:calc(38px + env(safe-area-inset-top,0px));left:10px;right:10px;z-index:4;border:1px solid var(--line);border-radius:22px;background:var(--surface);background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 10px 30px rgba(0,0,0,.22);animation:notification-in .3s ease-out}
+.inspiration-notice[hidden]{display:none}
+.inspiration-accept{display:flex;flex-direction:column;gap:5px;width:100%;padding:14px 38px 14px 16px;border:0;border-radius:22px;background:none;text-align:left;font:inherit;font-size:13px;line-height:1.45;color:var(--ink);overflow-wrap:anywhere}
+.inspiration-heading{display:flex;align-items:center;gap:7px;width:100%;font-size:10px;letter-spacing:.04em;color:var(--muted)}
+.inspiration-heading>span:last-child{margin-left:auto}
+.inspiration-icon{display:grid;place-items:center;width:21px;height:21px;border-radius:6px;background:var(--blip);color:var(--surface);font-size:16px}
+.inspiration-type{font-weight:700;font-size:12px}
+.inspiration-action{font-size:11px;color:var(--muted);margin-top:2px}
+.inspiration-dismiss{position:absolute;right:2px;top:2px;min-width:36px;min-height:44px;border:0;border-radius:50%;background:none;font-size:22px;color:var(--muted)}
+@keyframes notification-in{from{transform:translateY(-18px);opacity:0}to{transform:translateY(0);opacity:1}}
 .schedule-field{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:700}
 .schedule-field select{width:100%;font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--screen);color:var(--ink)}
 .sheet{position:absolute;inset:0;background:rgba(10,12,30,.45);display:flex;align-items:flex-end;z-index:5}
