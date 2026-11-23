@@ -4,17 +4,26 @@ Turn everyday tasks into progress for a growing pixel pet. Complete tasks to ear
 
 **[Play Blip on GitHub Pages](https://ian-robotics.github.io/Blip/)**
 
-This is a fourteen-day playtest prototype; progress is saved in your current browser, not an online account.
+This is a fourteen-day playtest prototype. Progress is saved in your current browser; signing in with Google keeps a separate save for your account on that browser, but progress does not sync between devices. See the [privacy policy](https://ian-robotics.github.io/Blip/privacy.html).
 
 ## Start playing
 
-1. Choose **Continue as guest**, or use the mock login. It does not create an account; do not enter a real password.
+1. Choose **Continue with Google** or **Continue as guest**. Google sign-in only shares your name and profile picture with Blip and gives your account its own save. **Log out** switches back to the guest save.
 2. Choose your Blip’s color and name.
 3. On **Today**, complete a starter task or tap **+** to add your own. Choose text or voice, enter a description, and select **Review**.
 4. Check the suggested tasks, remove unwanted ones, and adjust urgency if needed. Nothing is added until you confirm.
-5. Complete tasks to earn XP and **one drumstick per task’s first completion**. Open **Blip** and tap **Feed 🍗** to increase daily fullness.
+5. Complete tasks to earn XP and **one drumstick per task’s first completion**. Your Blip hops and the XP flies into the XP bar. Open **Blip** and tap **Feed 🍗** to increase daily fullness.
 
 Try a description such as: “Buy milk and eggs at Ralphs, review my lecture notes, and prepare my presentation.” Voice input requires a supported browser and microphone permission; text input is always available.
+
+## Blip's message cards and alerts
+
+After you skip to a new day, Blip sends up to three message cards: task ideas from your history, reminders for tasks due today, and short notices. A card stays until you handle it:
+
+- **Swipe right** (or tap **✓**) to keep it. Task ideas are added to today; a reminder jumps to its task.
+- **Swipe left** (or tap **✕**) to skip it. Skipped ideas are not suggested again.
+
+Turn on **Alerts** in the controls below the phone to get a system notification when a card arrives while Blip is in a background tab. Clicking the notification brings you back to the card. Alerts only work while the page is open; the browser asks for permission once.
 
 ## XP, urgency, and feeding
 
