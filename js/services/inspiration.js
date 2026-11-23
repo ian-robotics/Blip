@@ -3,7 +3,10 @@ import { isValidTaskReward } from '../domain/rewards.js';
 
 export const titleKey = title => title.trim().toLocaleLowerCase().replace(/[\s\p{P}]+/gu, '');
 export const isNotice = task => task.kind === 'notice' || /\bplan(?:ning)?\b.*\b(?:tomorrow|tmr|today|task|next step)\b|\b(?:review|organize)\b.*\b(?:tomorrow|tmr|tasks?)\b|规划.*(?:明天|任务)|安排.*明天|计划.*(?:明天|任务)/i.test(task.title);
-export const canAddInspiration = task => task?.source === 'groq' && task.kind === 'inspiration' && !isNotice(task);
+// Concrete titles can be kept: Groq task ideas, plus local repeats of exact past titles.
+// Groq "pattern" cards are observations, and notices are never tasks.
+export const canAddInspiration = task => !!task && !isNotice(task) &&
+  (task.kind === 'inspiration' || (task.source !== 'groq' && task.kind === 'pattern'));
 
 export function historicalCandidates(state) {
   const current = new Set(state.tasks.map(task => titleKey(task.title)));
@@ -43,7 +46,7 @@ export function localInspirations(state) {
       difficultyReason:'A small suggested action; adjust your task description for a new assessment.',
       urgencyReason:'Optional suggestion.', rewardVersion:2, scheduledDay:state.day,
       kind:repeated ? 'pattern' : 'notice',
-      message:repeated ? `You’ve done “${title}” on several days. Add it for today?` : 'Take a moment to think about tomorrow’s tasks. You can add them when you’re ready.', source:'local'});
+      message:repeated ? `You’ve done “${title}” on several days. Doing it again today?` : 'Take a moment to think about tomorrow’s tasks. You can add them when you’re ready.', source:'local'});
   }
   return suggestions;
 }

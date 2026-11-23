@@ -32,14 +32,21 @@
     <div class="phone-col">
       <div class="phone"><div class="screen" id="screen">
         <div class="status"><span id="clock">9:41</span><span id="dayLabel">Day 5</span></div>
-        <aside class="inspiration-notice" id="inspirationNotice" aria-label="Task suggestion" hidden>
-          <div class="inspiration-accept">
-            <span class="inspiration-heading"><span class="inspiration-icon" aria-hidden="true">✦</span><strong>BLIP</strong><span>now</span></span>
-            <span class="inspiration-type" id="inspirationType"></span>
-            <span id="inspirationMessage" role="status" aria-live="polite"></span>
-            <button class="inspiration-action" id="inspirationAccept" type="button"><span id="inspirationAction"></span></button>
+        <aside class="inspiration-notice" id="inspirationNotice" aria-label="Message from Blip" tabindex="0" hidden>
+          <span class="swipe-tag swipe-keep" aria-hidden="true">KEEP</span>
+          <span class="swipe-tag swipe-skip" aria-hidden="true">SKIP</span>
+          <div class="inspiration-body">
+            <span class="inspiration-avatar" id="inspirationAvatar" aria-hidden="true"></span>
+            <div class="inspiration-text">
+              <span class="inspiration-heading"><strong id="inspirationFrom">Blip</strong><span class="inspiration-type" id="inspirationType"></span></span>
+              <span class="inspiration-message" id="inspirationMessage" role="status" aria-live="polite"></span>
+            </div>
           </div>
-          <button class="inspiration-dismiss" id="inspirationDismiss" type="button" aria-label="Dismiss task suggestion">×</button>
+          <div class="inspiration-actions">
+            <button class="inspiration-skip" id="inspirationDismiss" type="button">✕ Skip</button>
+            <span class="inspiration-hint" id="inspirationHint" aria-hidden="true"></span>
+            <button class="inspiration-keep" id="inspirationAccept" type="button">✓ Add task</button>
+          </div>
         </aside>
 
         <section class="review-banner" id="reviewBanner" aria-label="Saved day" hidden>
