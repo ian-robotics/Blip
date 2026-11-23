@@ -2,9 +2,16 @@
 .stage{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
 .stage .big{height:130px;display:grid;place-items:center}
 .blip-speech-wrap{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px;margin:8px 0 4px}
-.blip-speech{position:relative;width:100%;min-height:64px;padding:14px 16px;border:1px solid #9996ff;border-radius:18px;background:var(--blip-soft);color:var(--ink);font:inherit;font-size:14px;line-height:1.5;text-align:center;overflow-wrap:anywhere}
-.blip-speech::before{content:"";position:absolute;top:-7px;left:calc(50% - 6px);width:12px;height:12px;background:var(--blip-soft);border-top:1px solid #9996ff;border-left:1px solid #9996ff;transform:rotate(45deg)}
-.blip-speech:hover{border-color:var(--blip)}
+/* Pixel-art dialog box: 4px pixel outline with notched corners, pixel tail and an RPG-style blink prompt. */
+.blip-speech{--px:4px;--out:#9996ff;--fill:color-mix(in srgb,var(--surface) 84%,#9996ff);--hi:color-mix(in srgb,var(--fill) 70%,#fff);--lo:color-mix(in srgb,var(--fill) 80%,#000);--drop:color-mix(in srgb,#9996ff 30%,transparent);
+  position:relative;width:calc(100% - 2*var(--px));min-height:64px;margin:16px var(--px) calc(2*var(--px));padding:14px 18px 18px;border:0;border-radius:0;background:var(--fill);color:var(--ink);font:inherit;font-size:14px;line-height:1.5;text-align:center;overflow-wrap:anywhere;cursor:pointer;
+  box-shadow:0 calc(-1*var(--px)) 0 0 var(--out),0 var(--px) 0 0 var(--out),calc(-1*var(--px)) 0 0 0 var(--out),var(--px) 0 0 0 var(--out),inset 0 var(--px) 0 0 var(--hi),inset 0 calc(-1*var(--px)) 0 0 var(--lo),var(--px) calc(2*var(--px)) 0 0 var(--drop),calc(2*var(--px)) var(--px) 0 0 var(--drop)}
+.blip-speech::before{content:"";position:absolute;left:calc(50% - 2px);top:0;width:4px;height:4px;
+  box-shadow:0 -16px 0 0 var(--out),-4px -12px 0 0 var(--out),0 -12px 0 0 var(--fill),4px -12px 0 0 var(--out),-8px -8px 0 0 var(--out),-4px -8px 0 0 var(--fill),0 -8px 0 0 var(--fill),4px -8px 0 0 var(--fill),8px -8px 0 0 var(--out),-4px -4px 0 0 var(--fill),0 -4px 0 0 var(--fill),4px -4px 0 0 var(--fill)}
+.blip-speech::after{content:"\25BC";position:absolute;right:10px;bottom:5px;font-family:var(--f-pixel);font-size:9px;line-height:1;color:var(--out);animation:speech-blink 1s steps(1) infinite}
+.blip-speech:hover,.blip-speech:focus-visible{--out:var(--blip);outline:none}
+@keyframes speech-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.blip-speech::after{animation:none}}
 .blip-speech-wrap>.hint{font-size:11px}
 .stage h3{font-size:22px;max-width:100%;overflow-wrap:anywhere}
 .bob{animation:bob 2.4s ease-in-out infinite}
@@ -121,9 +128,6 @@ button:disabled{cursor:not-allowed;opacity:.5}
 
 /* Daily accessories are CSS shapes, independent of XP evolution artwork. */
 .energy-body{display:grid;place-items:center}
-.energy-royal .royal-rays{display:block;position:absolute;inset:-12px;border-radius:50%;opacity:.5;background:repeating-conic-gradient(#ffd87588 0deg 8deg,transparent 8deg 24deg);mask-image:radial-gradient(circle,transparent 25%,#000 45%,transparent 72%);animation:energy-orbit 25s linear infinite}
-.energy-static .royal-rays{animation:none}
-@media(prefers-reduced-motion:reduce){.energy-royal .royal-rays{animation:none}}
 
 /* The HUD uses the same scene, scaled as a whole to keep accessories aligned. */
 #hudPet{position:relative;isolation:isolate}
@@ -153,16 +157,5 @@ button:disabled{cursor:not-allowed;opacity:.5}
 /* Keep floating while the feed bounce plays (transform vs. translate do not clash). */
 .energy-fed .energy-body{animation:energy-feed .5s ease-out,pet-float 3.4s ease-in-out infinite}
 
-/* Rays only appear at 12+ fullness. */
-.royal-rays{display:none;pointer-events:none}
-
-/* Pixel accessories by daily fullness: scepter 3+, crown 5+, banners 12+ (throne removed). */
-.acc-scepter,.acc-crown,.acc-banner{display:none;position:absolute;image-rendering:pixelated;pointer-events:none}
-.acc-scepter{z-index:5;right:-14px;top:22px;width:27px;height:87px;transform:rotate(16deg);filter:drop-shadow(0 0 6px #ffd87599)}
-.acc-crown{z-index:4;left:50%;top:-30px;width:84px;height:52px;transform:translateX(-50%) rotate(-6deg);filter:drop-shadow(0 0 8px #ffd875aa)}
-.fullness-2 .acc-scepter,.fullness-3 .acc-scepter,.fullness-4 .acc-scepter{display:block}
-.fullness-3 .acc-crown,.fullness-4 .acc-crown{display:block}
-.acc-banner{z-index:0;top:16px;width:42px;height:87px;filter:drop-shadow(0 4px 6px #0007)}
-.energy-royal .acc-banner{display:block}
-.acc-banner.banner-left{left:0;transform:rotate(4deg)}
-.acc-banner.banner-right{right:0;transform:scaleX(-1) rotate(4deg)}
+/* Only the halo remains: no crown, scepter, banners, rays or sparkles. */
+.energy-particles{display:none}

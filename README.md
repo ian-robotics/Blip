@@ -1,6 +1,6 @@
 # Blip · Your tasks, your pixel companion
 
-Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to unlock a glowing halo, a scepter, a crown, and royal banners.
+Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to light up a glowing halo that grows brighter through the day.
 
 **[Play Blip on GitHub Pages](https://ian-robotics.github.io/Blip/)**
 
@@ -31,15 +31,13 @@ Groq estimates task difficulty. Rewards are **easy: 10 XP**, **medium: 20 XP**, 
 
 XP drives levels and evolution. Feeding is a separate daily activity: each drumstick adds **1 fullness**, with a daily goal of **5** and no upper limit.
 
-| Daily fullness | Blip’s accessories and effects |
+| Daily fullness | Blip's halo |
 | --- | --- |
-| 1–2 | Halo (level 1) in your Blip's color |
-| 3–4 | Brighter halo with sparkles (level 2) and a pixel scepter |
-| 5–7 | Full radiant halo (level 3), pixel crown and particles |
-| 8–11 | Golden glow and golden particles |
-| 12+ | Pixel royal banners and radiating light |
+| 1–2 | Halo level 1 in your Blip's color |
+| 3–4 | Halo level 2, brighter with sparkles |
+| 5+ | Halo level 3, full radiant glow |
 
-Effects appear on both Today and Blip. Reduced-motion settings keep the decorations while disabling their animations.
+The halo appears on both Today and Blip, where Blip also floats gently. Tap Blip's pixel dialog box on the Blip tab for another line. Reduced-motion settings keep the halo while disabling animations.
 
 You can undo a completed task by clicking its checkmark again. Its XP is returned, and a popup explains any level decrease. Earned badges stay unlocked. Undoing or deleting tasks does not reclaim food or fullness; completing the same task again does not award another drumstick.
 
