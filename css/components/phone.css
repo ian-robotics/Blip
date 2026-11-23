@@ -8,7 +8,7 @@
 .view[hidden]{display:none!important}
 
 .hud{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:12px}
-.hud .pet{width:64px;height:64px;flex:none;display:grid;place-items:center;background:var(--blip-soft);border-radius:16px}
+.hud .pet{width:64px;height:64px;flex:none;display:grid;place-items:center}
 .hud .meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
 .hud .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .hud .name{font-family:var(--f-display);font-weight:700;font-size:17px;min-width:0;overflow-wrap:anywhere}
