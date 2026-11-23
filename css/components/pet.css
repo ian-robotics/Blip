@@ -144,11 +144,6 @@ button:disabled{cursor:not-allowed;opacity:.5}
 #hudPet{position:relative;isolation:isolate}
 #hudPet > .energy-pet{position:absolute;left:50%;top:50%;margin-left:-105px;margin-top:-105px;transform:scale(.36);transform-origin:center}
 #hudPet .energy-body .blip-art{width:120px;height:120px}
-.royal-scepter{display:none;position:absolute;z-index:5;right:-11px;top:30px;width:8px;height:86px;background:linear-gradient(90deg,#aa681b,#fff2a2,#e9ad30);border-radius:3px;transform:rotate(18deg);box-shadow:0 0 8px #ffd87599}
-.fullness-2 .royal-scepter,.fullness-3 .royal-scepter,.fullness-4 .royal-scepter{display:block}
-.royal-scepter:before{content:'';position:absolute;width:25px;height:25px;left:-9px;top:-20px;background:linear-gradient(135deg,#fff4b1,#ffc53e);border:3px solid #fff0a0;transform:rotate(45deg);box-shadow:0 0 15px #ffd875}
-.royal-scepter i{position:absolute;z-index:1;left:-2px;top:-12px;width:12px;height:12px;background:#bf70ff;transform:rotate(45deg);box-shadow:inset 2px 2px #eac4ff}
-.royal-scepter:after{content:'';position:absolute;left:-5px;top:9px;width:18px;height:6px;background:#ffe395;border-radius:3px}
 .feeding-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 8px;font-size:13px}
 .feeding-controls .btn{font-size:12px;max-width:65%}
 
@@ -161,3 +156,15 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .bar.bar-pulse{animation:bar-pulse .5s ease-out}
 @keyframes bar-pulse{0%{box-shadow:0 0 0 0 #49baffaa}60%{box-shadow:0 0 0 5px #49baff33}100%{box-shadow:0 0 0 0 transparent}}
 @media (prefers-reduced-motion:reduce){#hudPet .energy-body .blip-art,#hudPet.hop .energy-body .blip-art,.bar.bar-pulse{animation:none}}
+
+/* Daily-fullness halo (pixel art per Blip color) replaces the CSS rings and scepter. */
+.energy-aura,.energy-ring{display:none}
+.happy-halo{position:absolute;z-index:1;left:50%;top:50%;width:190px;height:190px;margin:-95px 0 0 -95px;image-rendering:pixelated;pointer-events:none;animation:halo-glow 3s ease-in-out infinite,pet-float 3.4s ease-in-out infinite}
+.fullness-4 .happy-halo{top:calc(50% + 7px)}
+@keyframes halo-glow{0%,100%{opacity:.85;scale:1}50%{opacity:1;scale:1.04}}
+
+/* Idle float: the pet (and its halo) drift up and down on Today and the Blip tab. */
+.energy-body{animation:pet-float 3.4s ease-in-out infinite}
+@keyframes pet-float{0%,100%{translate:0 0}50%{translate:0 -8px}}
+/* Keep floating while the feed bounce plays (transform vs. translate do not clash). */
+.energy-fed .energy-body{animation:energy-feed .5s ease-out,pet-float 3.4s ease-in-out infinite}

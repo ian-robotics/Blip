@@ -1,6 +1,6 @@
 # Blip · Your tasks, your pixel companion
 
-Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to unlock glowing effects, a scepter, a crown, and a throne.
+Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to unlock a glowing halo, a crown, and a throne.
 
 **[Play Blip on GitHub Pages](https://ian-robotics.github.io/Blip/)**
 
@@ -12,7 +12,7 @@ This is a fourteen-day playtest prototype. Progress is saved in your current bro
 2. Choose your Blip’s color and name.
 3. On **Today**, complete a starter task or tap **+** to add your own. Choose text or voice, enter a description, and select **Review**.
 4. Check the suggested tasks, remove unwanted ones, and adjust urgency if needed. Nothing is added until you confirm.
-5. Complete tasks to earn XP and **one drumstick per task’s first completion**. Your Blip hops and the XP flies into the XP bar. Open **Blip** and tap **Feed 🍗** to increase daily fullness.
+5. Complete tasks to earn XP and **one drumstick per task’s first completion**. Your Blip hops and the XP flies into the XP bar. Blip gently floats on Today and the Blip tab. Open **Blip** and tap **Feed 🍗** to increase daily fullness.
 
 Try a description such as: “Buy milk and eggs at Ralphs, review my lecture notes, and prepare my presentation.” Voice input requires a supported browser and microphone permission; text input is always available.
 
@@ -33,9 +33,9 @@ XP drives levels and evolution. Feeding is a separate daily activity: each drums
 
 | Daily fullness | Blip’s accessories and effects |
 | --- | --- |
-| 1–2 | Blue glow |
-| 3–4 | Scepter and spinning energy ring |
-| 5–7 | Scepter, crown, purple glow and particles |
+| 1–2 | Halo (level 1) in your Blip's color |
+| 3–4 | Brighter halo with sparkles (level 2) |
+| 5–7 | Full radiant halo (level 3), crown and particles |
 | 8–11 | Golden effects and a throne |
 | 12+ | Royal banners and radiating light |
 

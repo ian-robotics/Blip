@@ -33,3 +33,9 @@ export const BLIP_ART = {
   hat: { src: image(2), label: 'Evolved Blip' },
   king: { src: image(3), label: 'Mature Blip' }
 };
+
+/** Daily-fullness halo art: level 1 (1–2 fullness), 2 (3–4), 3 (5+), one per Blip color. */
+export function getHaloImage(level, color = 'blue') {
+  const selectedColor = isBlipColor(color) ? color : 'blue';
+  return new URL(`../../assets/blip/halo/happy${level}-${selectedColor}.png`, import.meta.url).href;
+}

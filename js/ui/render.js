@@ -5,6 +5,7 @@ import { BADGES, DAYS, DEMO_DAYS } from '../config/game.js?v=daily-demo-1';
 import { levelOf, nextOf, petName, todayIdx } from '../domain/progression.js?v=daily-demo-1';
 import { $, esc } from './dom.js';
 import { sprite } from './sprites.js';
+import { getHaloImage } from '../config/art.js';
 import { createBlipSpeech } from './blip-speech.js';
 
 const chooseSpeech = createBlipSpeech();
@@ -43,7 +44,7 @@ export function render(S, { readOnly = false, currentState = S } = {}){
   $("fullnessFill").style.width=`${fullness.progress}%`;
   $("fullnessNote").textContent=fullness.count >= DAILY_FULLNESS_GOAL
     ? (fullness.count >= 12 ? 'Royal Blip! Crown, throne & royal banners.' : fullness.count >= 8 ? 'Throne unlocked! Next: royal banners at 12.' : 'Crown unlocked! Next: throne at 8.')
-    : (fullness.count >= 3 ? 'Scepter unlocked! Next: crown at 5.' : 'Feed 3 drumsticks to unlock a scepter. Independent of XP.');
+    : (fullness.count >= 3 ? 'Brighter halo! Next: crown and full halo at 5.' : fullness.count >= 1 ? 'Halo lit! Next: a brighter halo at 3.' : 'Feed a drumstick to light up a halo. Independent of XP.');
   $("stageLv").textContent="LV "+L.lv;
   $("stageName").textContent=name+" · "+L.name;
   $("renameBtn").hidden=readOnly;
@@ -83,12 +84,10 @@ function energyPet(form, color, fullness, readOnly) {
     <span class="royal-banner banner-left" aria-hidden="true"></span>
     <span class="royal-banner banner-right" aria-hidden="true"></span>
     <span class="royal-throne" aria-hidden="true"><i class="throne-back"></i><i class="throne-seat"></i><i class="throne-arm arm-left"></i><i class="throne-arm arm-right"></i><i class="throne-base"></i></span>
-    <span class="energy-aura" aria-hidden="true"></span>
-    <span class="energy-ring ring-one" aria-hidden="true"></span>
-    <span class="energy-ring ring-two" aria-hidden="true"></span>
+    ${fullness.tier ? `<img class="happy-halo" src="${getHaloImage(Math.min(fullness.tier, 3), color)}" alt="" aria-hidden="true" draggable="false">` : ''}
     <span class="energy-particles" aria-hidden="true">${Array.from({length:8},(_,i)=>`<i style="--i:${i};--y:${20 + (i % 3)*24}%"></i>`).join('')}</span>
     <span class="energy-wave" aria-hidden="true"></span>
-    <span class="energy-body"><span class="royal-scepter" aria-hidden="true"><i></i></span><span class="royal-crown" aria-hidden="true"><i></i></span>${sprite(form,form==="pod"?11:9,{},color)}</span>
+    <span class="energy-body"><span class="royal-crown" aria-hidden="true"><i></i></span>${sprite(form,form==="pod"?11:9,{},color)}</span>
     <span class="energy-gain" aria-hidden="true">🍗 +1</span>
   </div>`;
 }
