@@ -1,7 +1,9 @@
 import { fullnessOf, DAILY_FULLNESS_GOAL } from './domain/fullness.js';
-import { BADGES } from './config/game.js?v=daily-demo-1';
+import { BADGES, STORAGE_KEY } from './config/game.js?v=daily-demo-1';
+import { scopedKey } from './services/account.js';
 import { createStorage } from './services/storage.js?v=weekly-history-2';
 import { playSound, isSoundOn, setSoundOn } from './services/sound.js';
+import { alertPermission, requestAlerts } from './services/alerts.js';
 import { createStore } from './state/store.js?v=daily-demo-1';
 import { $ } from './ui/dom.js';
 import { render } from './ui/render.js?v=week-grid-1';
@@ -16,7 +18,8 @@ import { initInspiration } from './ui/inspiration.js';
 import { toast, levelUp, showDayPenalty, showLevelDown } from './ui/feedback.js';
 
 // Composition root: connect domain state to browser UI and bind page actions once.
-const store = createStore(createStorage());
+// Guests share the original save; each Google account gets its own save in this browser.
+const store = createStore(createStorage(undefined, scopedKey(STORAGE_KEY)));
 const timers = new Set();
 const celebratedFullnessDays = new Set();
 if (fullnessOf(store.getState()).count >= DAILY_FULLNESS_GOAL) {
@@ -30,6 +33,52 @@ function cancelFeedback() {
   $('levelDown').hidden = true;
   timers.forEach(clearTimeout);
   timers.clear();
+}
+
+const reducedMotion = () => globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+/** Blip hops on the Today header when a task is finished. */
+function hopPet() {
+  const pet = $('hudPet');
+  pet.classList.remove('hop');
+  void pet.offsetWidth; // restart the animation on quick repeats
+  pet.classList.add('hop');
+  later(() => pet.classList.remove('hop'), 700);
+}
+/** "+XP" flies from the finished task into the XP bar, which then pulses. */
+function flyXp(row, xp) {
+  const screen = $('screen');
+  const bar = $('hudBar').parentElement;
+  const from = row.querySelector('.xpv') ?? row;
+  const s = screen.getBoundingClientRect(), a = from.getBoundingClientRect(), b = bar.getBoundingClientRect();
+  const visible = b.bottom > s.top && b.top < s.bottom;
+  if (reducedMotion() || !visible || !document.body.animate) {
+    const label = document.createElement('span');
+    label.className = 'floatxp';
+    label.textContent = `+${xp} XP`;
+    row.appendChild(label);
+    return;
+  }
+  const label = document.createElement('span');
+  label.className = 'flyxp';
+  label.textContent = `+${xp} XP`;
+  label.setAttribute('aria-hidden', 'true');
+  screen.appendChild(label);
+  const x0 = a.left - s.left + a.width / 2, y0 = a.top - s.top + a.height / 2;
+  const x1 = b.left - s.left + b.width / 2, y1 = b.top - s.top + b.height / 2;
+  const at = (x, y, scale, opacity) => ({ transform: `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${scale})`, opacity });
+  label.animate([
+    at(x0, y0, 1, 0),
+    { ...at(x0, y0 - 24, 1.25, 1), offset: .25 },
+    { ...at(x1, y1, .8, 1), offset: .9 },
+    at(x1, y1, .5, 0)
+  ], { duration: 900, easing: 'cubic-bezier(.45,0,.2,1)', fill: 'forwards' });
+  // Clean up on a timer too: a throttled background tab may never finish the animation.
+  setTimeout(() => {
+    label.remove();
+    bar.classList.remove('bar-pulse');
+    void bar.offsetWidth;
+    bar.classList.add('bar-pulse');
+  }, 950);
 }
 
 initNavigation();
@@ -79,12 +128,8 @@ store.subscribe((state, events) => {
         playSound('complete');
         if (event.foodEarned) toast('🍗 +1 drumstick! Visit Blip and tap Feed.');
         const row = $('taskList').querySelector(`[data-id="${event.id}"]`);
-        if (row) {
-          const label = document.createElement('span');
-          label.className = 'floatxp';
-          label.textContent = `+${event.xp} XP`;
-          row.appendChild(label);
-        }
+        if (row) flyXp(row, event.xp);
+        hopPet();
         break;
       }
       case 'pet-fed': {
@@ -133,7 +178,7 @@ store.subscribe((state, events) => {
           playSound(event.currentLevel.lv < event.previousLevel.lv ? 'levelDown' : 'penalty');
         } else {
           playSound('newDay');
-          toast(`New day. Streak is now ${event.streak} days.`);
+          toast(`New day. Streak is now ${event.streak} ${event.streak === 1 ? 'day' : 'days'}.`);
         }
         break;
       case 'reset':
@@ -222,7 +267,8 @@ $('nextDay').onclick = () => {
 $('feedPet').onclick = () => {
   if (!history.isReviewing() && $('login').hidden) store.feedPet();
 };
-$('reset').onclick = () => store.reset();
+// Like Skip, Reset only works once someone has entered the app.
+$('reset').onclick = () => { if ($('login').hidden) store.reset(); };
 function drawSoundToggle() {
   $('soundToggle').textContent = isSoundOn() ? 'Sound: on' : 'Sound: off';
   $('soundToggle').setAttribute('aria-pressed', String(isSoundOn()));
@@ -233,13 +279,35 @@ $('soundToggle').onclick = () => {
   playSound('tap');
 };
 drawSoundToggle();
+function drawAlertsToggle() {
+  const permission = alertPermission();
+  $('alertsToggle').hidden = permission === 'unsupported';
+  $('alertsToggle').textContent = permission === 'granted' ? 'Alerts: on'
+    : permission === 'denied' ? 'Alerts: blocked' : 'Alerts: off';
+  $('alertsToggle').setAttribute('aria-pressed', String(permission === 'granted'));
+}
+$('alertsToggle').onclick = async () => {
+  const permission = alertPermission();
+  if (permission === 'default') {
+    await requestAlerts();
+    drawAlertsToggle();
+    if (alertPermission() === 'granted') toast('Blip will alert you when a card arrives while this tab is in the background.');
+  } else if (permission === 'granted') {
+    toast('To turn alerts off, change notifications for this site in your browser settings.');
+  } else {
+    toast('Alerts are blocked. Allow notifications for this site in your browser settings.');
+  }
+};
+drawAlertsToggle();
 const now = new Date();
 $('clock').textContent = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
 refresh(store.getState());
 
 initInspiration(store, {
-  canShow: () => !history.isReviewing() && document.visibilityState !== 'hidden' &&
+  // Cards also appear in a background tab, where they trigger a system notification.
+  canShow: () => !history.isReviewing() &&
     ['login','intro','colorPicker','lvlUp','levelDown','dayPenalty','talkSheet'].every(id => $(id).hidden),
+  onAlertsChange: drawAlertsToggle,
   onOpen: () => showView('today'),
   notify: toast
 });

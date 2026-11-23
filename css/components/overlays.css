@@ -158,3 +158,5 @@ cursor: not-allowed;
 .prio-option[aria-pressed="true"].low{background:var(--low);color:var(--phone)}
 .prio-option[aria-pressed="true"].normal{background:var(--blip);color:var(--phone)}
 .prio-option[aria-pressed="true"].high{background:var(--accent);color:var(--accent-ink)}
+.google-signin{display:flex;justify-content:center;min-height:44px;width:100%}
+#googleStatus:empty{display:none}

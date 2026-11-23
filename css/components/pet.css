@@ -151,3 +151,13 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .royal-scepter:after{content:'';position:absolute;left:-5px;top:9px;width:18px;height:6px;background:#ffe395;border-radius:3px}
 .feeding-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0 8px;font-size:13px}
 .feeding-controls .btn{font-size:12px;max-width:65%}
+
+/* Today header: Blip breathes while idle and hops when a task is finished. */
+#hudPet .energy-body .blip-art{transform-origin:50% 85%;animation:pet-breathe 3.2s ease-in-out infinite}
+#hudPet.hop .energy-body .blip-art{animation:pet-hop .6s cubic-bezier(.3,.7,.4,1)}
+@keyframes pet-breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.04,.96)}}
+@keyframes pet-hop{0%{transform:translateY(0) scale(1,1)}20%{transform:translateY(0) scale(1.12,.86)}50%{transform:translateY(-34px) scale(.94,1.08)}80%{transform:translateY(0) scale(1.08,.92)}100%{transform:translateY(0) scale(1,1)}}
+.flyxp{position:absolute;left:0;top:0;z-index:6;opacity:0;pointer-events:none;font-family:var(--f-pixel);font-size:15px;color:var(--blip);text-shadow:0 2px 8px rgba(0,0,0,.35);white-space:nowrap}
+.bar.bar-pulse{animation:bar-pulse .5s ease-out}
+@keyframes bar-pulse{0%{box-shadow:0 0 0 0 #49baffaa}60%{box-shadow:0 0 0 5px #49baff33}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){#hudPet .energy-body .blip-art,#hudPet.hop .energy-body .blip-art,.bar.bar-pulse{animation:none}}

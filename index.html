@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Silkscreen&display=swap">
 <link rel="stylesheet" href="./css/style.css">
+<script src="https://accounts.google.com/gsi/client?hl=en" async defer></script>
 <script type="module" src="./js/app.js"></script>
 </head>
 <body>
@@ -226,16 +227,13 @@
           <button class="btn primary" id="introNext">Next</button>
         </div>
 
-        <!-- Mock login: demo only, no real account -->
+        <!-- Sign in with Google, or play as a guest -->
         <div class="overlay login" id="login" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
           <h2 id="loginTitle">Log in to Blip</h2>
-          <form class="login-form" id="loginForm">
-            <label>Username<input id="loginName" type="text" maxlength="24" required autocomplete="off"></label>
-            <label>Password<input id="loginPassword" type="password" required autocomplete="new-password"></label>
-            <button class="btn primary block" type="submit">Log in</button>
-          </form>
+          <div class="google-signin" id="googleSignIn"></div>
+          <p class="hint" id="googleStatus" role="status"></p>
           <button class="btn" id="loginGuest" type="button">Continue as guest</button>
-          <p class="hint">Demo only. No account is created and your password is not saved, so please don't use a real one.</p>
+          <p class="hint">Signing in keeps a separate save for your Google account on this device. Progress does not sync between devices yet. <a href="./privacy.html" target="_blank" rel="noopener">Privacy</a></p>
         </div>
 
         <div class="toast" id="toast" hidden></div>
@@ -245,6 +243,7 @@
         <button class="btn" id="nextDay">Skip to tomorrow</button>
         <button class="btn" id="reset">Reset demo</button>
         <button class="btn" id="soundToggle" type="button">Sound: on</button>
+        <button class="btn" id="alertsToggle" type="button" hidden>Alerts: off</button>
         <button class="btn" id="logout" type="button">Log out</button>
         <p>Prototype controls: jump a day to test streaks, or start the demo over.</p>
       </div>

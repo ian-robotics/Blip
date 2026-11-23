@@ -61,11 +61,11 @@ export function getStateError(state) {
 export const isValidState = state => getStateError(state) === null;
 
 /** Storage access is deferred so denied localStorage still permits in-memory use. */
-export function createStorage(getStorage = () => window.localStorage) {
+export function createStorage(getStorage = () => window.localStorage, key = STORAGE_KEY) {
   return {
     load() {
       try {
-        const raw = getStorage().getItem(STORAGE_KEY);
+        const raw = getStorage().getItem(key);
         const state = JSON.parse(raw);
         // Expand existing seven-day saves and snapshots without losing progress.
         for (const progress of [state, ...(Array.isArray(state?.history) ? state.history : [])]) {
@@ -97,9 +97,9 @@ export function createStorage(getStorage = () => window.localStorage) {
           if (isValidState(repaired)) {
             try {
               const storage = getStorage();
-              const backupKey = `${STORAGE_KEY}:before-history-repair`;
+              const backupKey = `${key}:before-history-repair`;
               if (!storage.getItem(backupKey)) storage.setItem(backupKey, raw);
-              storage.setItem(STORAGE_KEY, JSON.stringify(repaired));
+              storage.setItem(key, JSON.stringify(repaired));
             } catch { /* Preserve progress in memory even when persistence fails. */ }
             return repaired;
           }
@@ -126,7 +126,7 @@ export function createStorage(getStorage = () => window.localStorage) {
     },
     save(state) {
       try {
-        getStorage().setItem(STORAGE_KEY, JSON.stringify(state));
+        getStorage().setItem(key, JSON.stringify(state));
         return true;
       } catch {
         return false;

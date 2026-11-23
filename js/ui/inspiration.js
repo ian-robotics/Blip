@@ -3,6 +3,8 @@ import { BLIP_WORDS } from '../config/blip-words.js';
 import { levelOf, petName } from '../domain/progression.js?v=daily-demo-1';
 import { sprite } from './sprites.js';
 import { $ } from './dom.js';
+import { scopedKey } from '../services/account.js';
+import { systemAlert, requestAlerts, alertsAsked, alertPermission } from '../services/alerts.js';
 
 const SWIPE_DISTANCE = 80;
 const GAP_AFTER_DECISION = 1500;
@@ -13,7 +15,7 @@ const KIND_LABELS = { inspiration: 'Task idea', pattern: 'Your routine', reminde
  * A card stays until the player keeps it (swipe right / ✓) or skips it
  * (swipe left / ✕); later cards wait in line instead of replacing it.
  */
-export function initInspiration(store, { canShow, onOpen, notify,
+export function initInspiration(store, { canShow, onOpen, notify, onAlertsChange = () => {},
   request = fetchInspirations, schedule = setTimeout, cancel = clearTimeout } = {}) {
   let generation = 0;
   let controller;
@@ -27,8 +29,9 @@ export function initInspiration(store, { canShow, onOpen, notify,
   let lastDecision = 0;
   let requestSettled = true;
   let leaving = false;
-  const cacheKey = 'blip-inspiration-days-v2';
-  const rejectedKey = 'blip-inspiration-rejected-v1';
+  let systemNote = null;
+  const cacheKey = scopedKey('blip-inspiration-days-v2');
+  const rejectedKey = scopedKey('blip-inspiration-rejected-v1');
   const read = (key, fallback) => {
     try { return JSON.parse(globalThis.localStorage?.getItem(key) || 'null') ?? fallback; } catch { return fallback; }
   };
@@ -39,8 +42,13 @@ export function initInspiration(store, { canShow, onOpen, notify,
   const save = () => write(cacheKey, days);
   const notice = $('inspirationNotice');
 
+  function closeSystemNote() {
+    systemNote?.close();
+    systemNote = null;
+  }
   function stop() {
     generation++;
+    closeSystemNote();
     controller?.abort();
     timers.forEach(cancel);
     timers = [];
@@ -108,6 +116,9 @@ export function initInspiration(store, { canShow, onOpen, notify,
     resetCard();
     draw(active, state);
     notice.hidden = false;
+    // In a background tab, also call the player back with a system notification.
+    systemNote = systemAlert({ title: $('inspirationFrom').textContent, body: active.message,
+      icon: $('inspirationAvatar').querySelector('img')?.src, onClick: onOpen });
     return true;
   }
   function watch(token) {
@@ -175,6 +186,9 @@ export function initInspiration(store, { canShow, onOpen, notify,
   }
   /** Close the current card; the next queued card may follow shortly. */
   function finish(direction) {
+    closeSystemNote();
+    // Ask once, right after the first swipe or tap, so the browser treats it as the player's choice.
+    if (!alertsAsked() && alertPermission() === 'default') requestAlerts().then(onAlertsChange);
     const record = days[day];
     if (record) { record.active = null; save(); }
     active = null;
@@ -220,6 +234,9 @@ export function initInspiration(store, { canShow, onOpen, notify,
     finish('skip');
   }
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') closeSystemNote();
+  });
   $('inspirationAccept').onclick = keep;
   $('inspirationDismiss').onclick = skip;
   notice.addEventListener('keydown', event => {
