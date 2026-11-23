@@ -1,6 +1,6 @@
 # Blip · Your tasks, your pixel companion
 
-Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to unlock a glowing halo, a crown, and a throne.
+Turn everyday tasks into progress for a growing pixel pet. Complete tasks to earn XP and drumsticks, then feed Blip to unlock a glowing halo, a scepter, a crown, and royal banners.
 
 **[Play Blip on GitHub Pages](https://ian-robotics.github.io/Blip/)**
 
@@ -34,10 +34,10 @@ XP drives levels and evolution. Feeding is a separate daily activity: each drums
 | Daily fullness | Blip’s accessories and effects |
 | --- | --- |
 | 1–2 | Halo (level 1) in your Blip's color |
-| 3–4 | Brighter halo with sparkles (level 2) |
-| 5–7 | Full radiant halo (level 3), crown and particles |
-| 8–11 | Golden effects and a throne |
-| 12+ | Royal banners and radiating light |
+| 3–4 | Brighter halo with sparkles (level 2) and a pixel scepter |
+| 5–7 | Full radiant halo (level 3), pixel crown and particles |
+| 8–11 | Golden glow and golden particles |
+| 12+ | Pixel royal banners and radiating light |
 
 Effects appear on both Today and Blip. Reduced-motion settings keep the decorations while disabling their animations.
 

@@ -39,3 +39,10 @@ export function getHaloImage(level, color = 'blue') {
   const selectedColor = isBlipColor(color) ? color : 'blue';
   return new URL(`../../assets/blip/halo/happy${level}-${selectedColor}.png`, import.meta.url).href;
 }
+
+/** Pixel accessories unlocked by daily fullness. */
+export const ACCESSORY_ART = {
+  scepter: new URL('../../assets/blip/accessories/scepter.png', import.meta.url).href,
+  crown: new URL('../../assets/blip/accessories/crown.png', import.meta.url).href,
+  banner: new URL('../../assets/blip/accessories/banner.png', import.meta.url).href
+};

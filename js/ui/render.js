@@ -5,7 +5,7 @@ import { BADGES, DAYS, DEMO_DAYS } from '../config/game.js?v=daily-demo-1';
 import { levelOf, nextOf, petName, todayIdx } from '../domain/progression.js?v=daily-demo-1';
 import { $, esc } from './dom.js';
 import { sprite } from './sprites.js';
-import { getHaloImage } from '../config/art.js';
+import { getHaloImage, ACCESSORY_ART } from '../config/art.js';
 import { createBlipSpeech } from './blip-speech.js';
 
 const chooseSpeech = createBlipSpeech();
@@ -43,8 +43,8 @@ export function render(S, { readOnly = false, currentState = S } = {}){
   $("fullnessCount").textContent=`${fullness.count} / ${DAILY_FULLNESS_GOAL}`;
   $("fullnessFill").style.width=`${fullness.progress}%`;
   $("fullnessNote").textContent=fullness.count >= DAILY_FULLNESS_GOAL
-    ? (fullness.count >= 12 ? 'Royal Blip! Crown, throne & royal banners.' : fullness.count >= 8 ? 'Throne unlocked! Next: royal banners at 12.' : 'Crown unlocked! Next: throne at 8.')
-    : (fullness.count >= 3 ? 'Brighter halo! Next: crown and full halo at 5.' : fullness.count >= 1 ? 'Halo lit! Next: a brighter halo at 3.' : 'Feed a drumstick to light up a halo. Independent of XP.');
+    ? (fullness.count >= 12 ? 'Royal Blip! Crown, scepter & royal banners.' : fullness.count >= 8 ? 'Golden glow unlocked! Next: royal banners at 12.' : 'Crown unlocked! Next: golden glow at 8.')
+    : (fullness.count >= 3 ? 'Scepter & brighter halo! Next: crown at 5.' : fullness.count >= 1 ? 'Halo lit! Next: a scepter at 3.' : 'Feed a drumstick to light up a halo. Independent of XP.');
   $("stageLv").textContent="LV "+L.lv;
   $("stageName").textContent=name+" · "+L.name;
   $("renameBtn").hidden=readOnly;
@@ -81,13 +81,12 @@ export function render(S, { readOnly = false, currentState = S } = {}){
 function energyPet(form, color, fullness, readOnly) {
   return `<div class="energy-pet fullness-${fullness.tier}${fullness.count >= 12 ? ' energy-royal' : ''}${readOnly ? ' energy-static' : ''}">
     <span class="royal-rays" aria-hidden="true"></span>
-    <span class="royal-banner banner-left" aria-hidden="true"></span>
-    <span class="royal-banner banner-right" aria-hidden="true"></span>
-    <span class="royal-throne" aria-hidden="true"><i class="throne-back"></i><i class="throne-seat"></i><i class="throne-arm arm-left"></i><i class="throne-arm arm-right"></i><i class="throne-base"></i></span>
+    <img class="acc-banner banner-left" src="${ACCESSORY_ART.banner}" alt="" aria-hidden="true" draggable="false">
+    <img class="acc-banner banner-right" src="${ACCESSORY_ART.banner}" alt="" aria-hidden="true" draggable="false">
     ${fullness.tier ? `<img class="happy-halo" src="${getHaloImage(Math.min(fullness.tier, 3), color)}" alt="" aria-hidden="true" draggable="false">` : ''}
     <span class="energy-particles" aria-hidden="true">${Array.from({length:8},(_,i)=>`<i style="--i:${i};--y:${20 + (i % 3)*24}%"></i>`).join('')}</span>
     <span class="energy-wave" aria-hidden="true"></span>
-    <span class="energy-body"><span class="royal-crown" aria-hidden="true"><i></i></span>${sprite(form,form==="pod"?11:9,{},color)}</span>
+    <span class="energy-body"><img class="acc-scepter" src="${ACCESSORY_ART.scepter}" alt="" aria-hidden="true" draggable="false"><img class="acc-crown" src="${ACCESSORY_ART.crown}" alt="" aria-hidden="true" draggable="false">${sprite(form,form==="pod"?11:9,{},color)}</span>
     <span class="energy-gain" aria-hidden="true">🍗 +1</span>
   </div>`;
 }
